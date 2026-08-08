@@ -1,4 +1,4 @@
-package com.wantfree.jobtracker.di
+package com.wantfree.jobtracker.core.di
 
 import dagger.Module
 import dagger.hilt.InstallIn
