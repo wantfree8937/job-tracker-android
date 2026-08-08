@@ -276,12 +276,11 @@ fun LoginScreen(
                 .padding(vertical = 12.dp)
                 .drawBehind {
                     val maxValue = scrollState.maxValue
+                    if (maxValue <= 0) return@drawBehind
                     val trackHeight = size.height
                     val thumbHeight = (trackHeight * trackHeight / (trackHeight + maxValue))
                         .coerceAtLeast(24.dp.toPx())
-                    // 스크롤 불가 시에도 표시 (thumb = 전체 높이)
-                    val thumbY = if (maxValue <= 0) 0f
-                        else (trackHeight - thumbHeight) * (scrollState.value.toFloat() / maxValue)
+                    val thumbY = (trackHeight - thumbHeight) * (scrollState.value.toFloat() / maxValue)
                     drawRoundRect(
                         color = Color(0x59000000),
                         topLeft = Offset(0f, thumbY),
