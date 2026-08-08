@@ -112,8 +112,7 @@ fun LoginScreen(
         ) {
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState()) // 길어지면 카드 내부 스크롤
+                    .verticalScroll(rememberScrollState()) // 콘텐츠가 화면 넘을 때만 스크롤
                     .padding(horizontal = 36.dp, vertical = 32.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
