@@ -5,15 +5,19 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -88,23 +92,29 @@ fun LoginScreen(
         }
     }
 
-    Box(
+    BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
             .background(PageBackground),
     ) {
+        val cardMaxHeight = maxHeight * 0.92f // 콘텐츠가 화면 92% 넘으면 스크롤
+
         // ── 중앙 흰색 카드 (웹 auth-form) ──
         Surface(
             modifier = Modifier
                 .align(Alignment.Center)
                 .fillMaxWidth()
+                .heightIn(max = cardMaxHeight)
                 .padding(horizontal = 24.dp),
             shape = RoundedCornerShape(20.dp),
             color = SurfaceWhite,
             shadowElevation = 16.dp,
         ) {
             Column(
-                modifier = Modifier.padding(horizontal = 36.dp, vertical = 32.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState()) // 길어지면 카드 내부 스크롤
+                    .padding(horizontal = 36.dp, vertical = 32.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 // 브랜드 (웹 auth-brand)
