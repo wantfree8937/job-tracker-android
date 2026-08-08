@@ -7,11 +7,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -37,6 +39,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
@@ -95,11 +101,13 @@ fun LoginScreen(
             .fillMaxSize()
             .background(PageBackground),
     ) {
+        val scrollState = rememberScrollState()
+
         // ── 중앙 정렬 + 화면 전체 스크롤 (웹처럼 폼이 길면 페이지가 스크롤) ──
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
+                .verticalScroll(scrollState),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
@@ -258,6 +266,29 @@ fun LoginScreen(
             }
         }
     }
+
+        // ── 스크롤바 (콘텐츠가 화면보다 길 때 표시) ──
+        Box(
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .fillMaxHeight()
+                .width(4.dp)
+                .padding(vertical = 12.dp)
+                .drawBehind {
+                    val maxValue = scrollState.maxValue
+                    if (maxValue <= 0) return@drawBehind
+                    val trackHeight = size.height
+                    val thumbHeight = (trackHeight * trackHeight / (trackHeight + maxValue))
+                        .coerceAtLeast(24.dp.toPx())
+                    val thumbY = (trackHeight - thumbHeight) * (scrollState.value.toFloat() / maxValue)
+                    drawRoundRect(
+                        color = Color(0x59000000),
+                        topLeft = Offset(0f, thumbY),
+                        size = Size(size.width, thumbHeight),
+                        cornerRadius = CornerRadius(size.width / 2),
+                    )
+                },
+        )
 
         // ── 토스트 (상단 오버레이 — UI 밀지 않음) ──
         state.errorMessage?.let { message ->
