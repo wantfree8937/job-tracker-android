@@ -1,4 +1,4 @@
-package com.wantfree.jobtracker.presentation.navigation
+package com.wantfree.jobtracker.core.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost

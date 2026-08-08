@@ -178,7 +178,7 @@ fun LoginScreen(
 
 ## 4. AppNavHost.kt 수정 (기존 파일)
 
-`ui/navigation/AppNavHost.kt`를 열어서 home 화면을 로그인 화면으로 교체:
+`core/navigation/AppNavHost.kt`를 열어서 home 화면을 로그인 화면으로 교체:
 
 ```kotlin
 @Composable
