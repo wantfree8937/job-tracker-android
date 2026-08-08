@@ -97,7 +97,7 @@ fun LoginScreen(
             .fillMaxSize()
             .background(PageBackground),
     ) {
-        val cardMaxHeight = maxHeight * 0.92f // 콘텐츠가 화면 92% 넘으면 스크롤
+        val cardMaxHeight = maxHeight * 0.72f // 회원가입처럼 길 때 카드가 화면 72%까지만
 
         // ── 중앙 흰색 카드 (웹 auth-form) ──
         Surface(
