@@ -1,4 +1,4 @@
-package com.wantfree.jobtracker.ui.screens.home
+package com.wantfree.jobtracker.presentation.screens.home
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable

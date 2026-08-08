@@ -1,4 +1,4 @@
-package com.wantfree.jobtracker.ui.theme
+package com.wantfree.jobtracker.presentation.theme
 
 import androidx.compose.ui.graphics.Color
 

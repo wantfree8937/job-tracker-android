@@ -1,4 +1,4 @@
-package com.wantfree.jobtracker.ui.theme
+package com.wantfree.jobtracker.presentation.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
