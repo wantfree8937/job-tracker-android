@@ -5,13 +5,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -92,30 +90,32 @@ fun LoginScreen(
         }
     }
 
-    BoxWithConstraints(
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .background(PageBackground),
     ) {
-        val cardMaxHeight = maxHeight * 0.72f // 회원가입처럼 길 때 카드가 화면 72%까지만
-
-        // ── 중앙 흰색 카드 (웹 auth-form) ──
-        Surface(
+        // ── 중앙 정렬 + 화면 전체 스크롤 (웹처럼 폼이 길면 페이지가 스크롤) ──
+        Column(
             modifier = Modifier
-                .align(Alignment.Center)
-                .fillMaxWidth()
-                .heightIn(max = cardMaxHeight)
-                .padding(horizontal = 24.dp),
-            shape = RoundedCornerShape(20.dp),
-            color = SurfaceWhite,
-            shadowElevation = 16.dp,
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Column(
+            // ── 흰색 카드 (웹 auth-form) — 콘텐츠 크기만큼만 ──
+            Surface(
                 modifier = Modifier
-                    .verticalScroll(rememberScrollState()) // 콘텐츠가 화면 넘을 때만 스크롤
-                    .padding(horizontal = 36.dp, vertical = 32.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp),
+                shape = RoundedCornerShape(20.dp),
+                color = SurfaceWhite,
+                shadowElevation = 16.dp,
             ) {
+                Column(
+                    modifier = Modifier.padding(horizontal = 28.dp, vertical = 28.dp),
+                    verticalArrangement = Arrangement.spacedBy(14.dp),
+                ) {
                 // 브랜드 (웹 auth-brand)
                 Column(
                     modifier = Modifier.fillMaxWidth(),
@@ -257,6 +257,7 @@ fun LoginScreen(
                 )
             }
         }
+    }
 
         // ── 토스트 (상단 오버레이 — UI 밀지 않음) ──
         state.errorMessage?.let { message ->
