@@ -70,7 +70,12 @@ class HomeViewModel @Inject constructor(
             _uiState.update { it.copy(isSearching = true, errorMessage = null) }
             jobRepository.searchCollectedJobs(keyword)
                 .onSuccess { result ->
-                    _uiState.update { it.copy(isSearching = false, message = "공고 ${result.collected}개 수집") }
+                    val message = when {
+                        result.collected > 0 -> "공고 ${result.collected}개 수집"
+                        result.skipped > 0 -> "이미 수집된 공고 ${result.skipped}개 (새 공고 없음)"
+                        else -> "검색 결과가 없습니다"
+                    }
+                    _uiState.update { it.copy(isSearching = false, message = message) }
                     loadCollected()
                 }
                 .onFailure { e ->
