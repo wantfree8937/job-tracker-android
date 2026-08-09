@@ -136,6 +136,8 @@ fun HomeScreen(
                 focusedBorderColor = Indigo,
                 unfocusedBorderColor = BorderGray,
                 cursorColor = Indigo,
+                unfocusedPlaceholderColor = TextGray,
+                focusedPlaceholderColor = TextGray,
             ),
         )
 
@@ -230,9 +232,13 @@ fun HomeScreen(
             OutlinedTextField(
                 value = state.collectedKeyword,
                 onValueChange = viewModel::onCollectedKeywordChange,
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .height(56.dp),
                 placeholder = { Text("키워드로 공고 찾기 (예: 안드로이드)") },
                 singleLine = true,
+                minLines = 1,
+                maxLines = 1,
                 shape = RoundedCornerShape(10.dp),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                 keyboardActions = KeyboardActions(onSearch = { runSearch() }),
@@ -240,15 +246,26 @@ fun HomeScreen(
                     focusedBorderColor = Indigo,
                     unfocusedBorderColor = BorderGray,
                     cursorColor = Indigo,
+                    unfocusedPlaceholderColor = TextGray,
+                    focusedPlaceholderColor = TextGray,
                 ),
             )
             Spacer(Modifier.width(8.dp))
             Button(
                 onClick = runSearch,
+                enabled = !state.isSearching,
                 shape = RoundedCornerShape(10.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Indigo),
             ) {
-                Text("검색")
+                if (state.isSearching) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.height(18.dp).width(18.dp),
+                        color = Color.White,
+                        strokeWidth = 2.dp,
+                    )
+                } else {
+                    Text("검색")
+                }
             }
         }
 
@@ -269,6 +286,14 @@ fun HomeScreen(
                     )
                 }
             }
+        } else {
+            Spacer(Modifier.height(8.dp))
+            Text(
+                text = "관심분야를 설정하면 여기에 표시돼요. 회원가입 시 관심분야를 입력해보세요.",
+                color = TextGray,
+                fontSize = 13.sp,
+                modifier = Modifier.padding(horizontal = 20.dp),
+            )
         }
 
         Spacer(Modifier.height(12.dp))

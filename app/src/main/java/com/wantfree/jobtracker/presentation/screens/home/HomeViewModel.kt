@@ -27,6 +27,7 @@ data class HomeUiState(
     val collectedKeyword: String = "",
     val myKeywords: List<String> = emptyList(),
     val isLoading: Boolean = false,
+    val isSearching: Boolean = false,
     val errorMessage: String? = null,
     val message: String? = null,
 )
@@ -66,16 +67,16 @@ class HomeViewModel @Inject constructor(
 
     fun searchCollected() {
         val keyword = _uiState.value.collectedKeyword.trim()
-        if (keyword.isBlank()) return
+        if (keyword.isBlank() || _uiState.value.isSearching) return
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+            _uiState.update { it.copy(isSearching = true, errorMessage = null) }
             jobRepository.searchCollectedJobs(keyword)
                 .onSuccess { result ->
-                    _uiState.update { it.copy(isLoading = false, message = "공고 ${result.collected}개 수집") }
+                    _uiState.update { it.copy(isSearching = false, message = "공고 ${result.collected}개 수집") }
                     loadCollected()
                 }
                 .onFailure { e ->
-                    _uiState.update { it.copy(isLoading = false, errorMessage = e.message ?: "공고 검색에 실패했습니다") }
+                    _uiState.update { it.copy(isSearching = false, errorMessage = e.message ?: "공고 검색에 실패했습니다") }
                 }
         }
     }
