@@ -210,7 +210,7 @@ private fun StatCard(meta: StatusMeta, count: Long) {
 
 @Composable
 private fun JobRow(job: JobPostingResponse, onClick: () -> Unit) {
-    val isPastDeadline = runCatching { LocalDate.parse(job.deadline).isBefore(LocalDate.now()) }
+    val isPastDeadline = runCatching { job.deadline?.let { LocalDate.parse(it).isBefore(LocalDate.now()) } ?: false }
         .getOrDefault(false)
 
     Row(
@@ -226,10 +226,12 @@ private fun JobRow(job: JobPostingResponse, onClick: () -> Unit) {
             Text(text = job.companyName, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextDark)
             Text(text = job.position, fontSize = 14.sp, color = TextGray)
         }
-        Text(
-            text = "~${job.deadline}",
-            fontSize = 13.sp,
-            color = if (isPastDeadline) ErrorRed else TextGray,
-        )
+        if (!job.deadline.isNullOrBlank()) {
+            Text(
+                text = "~${job.deadline}",
+                fontSize = 13.sp,
+                color = if (isPastDeadline) ErrorRed else TextGray,
+            )
+        }
     }
 }
