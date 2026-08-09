@@ -17,6 +17,10 @@ import javax.inject.Inject
 /** 홈 화면 탭 — 내 공고 / 수집 공고 */
 enum class HomeTab { MINE, COLLECTED }
 
+/** 백엔드 키워드 규칙: 2~20자, 한글/영문/숫자/공백만 (400 방지용 클라이언트 선검증) */
+private val KEYWORD_REGEX = Regex("^[가-힣a-zA-Z0-9\\s]+$")
+private fun isValidKeyword(keyword: String) = keyword.length in 2..20 && KEYWORD_REGEX.matches(keyword)
+
 /** 홈(공고 목록) 화면 상태. selectedStatus == null 이면 전체 */
 data class HomeUiState(
     val tab: HomeTab = HomeTab.MINE,
@@ -140,6 +144,10 @@ class HomeViewModel @Inject constructor(
 
     /** 관심 분야 자동 저장(다이얼로그 유지) → 새로 추가된 키워드는 즉시 공고 수집(크롤링) */
     fun autoSaveKeywords(selected: List<String>) {
+        if (selected.any { !isValidKeyword(it) }) {
+            _uiState.update { it.copy(message = "키워드는 2~20자, 한글/영문/숫자만 가능해요") }
+            return
+        }
         val previousKeywords = _uiState.value.myKeywords
         viewModelScope.launch {
             authRepository.updateKeywords(selected)
@@ -166,6 +174,10 @@ class HomeViewModel @Inject constructor(
     fun findJobsWithKeyword(keyword: String) {
         val trimmed = keyword.trim()
         if (trimmed.isBlank() || _uiState.value.isSearching) return
+        if (!isValidKeyword(trimmed)) {
+            _uiState.update { it.copy(message = "키워드는 2~20자, 한글/영문/숫자만 가능해요") }
+            return
+        }
         viewModelScope.launch {
             if (trimmed !in _uiState.value.myKeywords) {
                 authRepository.updateKeywords(_uiState.value.myKeywords + trimmed)

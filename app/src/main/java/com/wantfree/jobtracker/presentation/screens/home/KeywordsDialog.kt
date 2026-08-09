@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -16,6 +17,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.OutlinedTextField
@@ -32,20 +34,27 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 private const val MAX_KEYWORDS = 10
+private const val KEYWORD_ERROR = "키워드는 2~20자, 한글/영문/숫자만 가능해요"
+private val KEYWORD_REGEX = Regex("^[가-힣a-zA-Z0-9\\s]+$")
 
 private val Indigo = Color(0xFF6366F1)
 private val BorderGray = Color(0xFFE5E7EB)
 private val TextGray = Color(0xFF64748B)
 
+private fun isValidKeyword(keyword: String) =
+    keyword.length in 2..20 && KEYWORD_REGEX.matches(keyword)
+
 @Composable
 fun KeywordsDialog(
     currentKeywords: List<String>,
+    isSearching: Boolean,
     onSave: (List<String>) -> Unit,
     onFind: (String) -> Unit,
     onDismiss: () -> Unit,
 ) {
     var selected by remember { mutableStateOf(currentKeywords) }
     var customInput by remember { mutableStateOf("") }
+    var inputError by remember { mutableStateOf<String?>(null) }
 
     fun remove(keyword: String) {
         selected = selected - keyword
@@ -54,11 +63,17 @@ fun KeywordsDialog(
 
     fun addCustom() {
         val keyword = customInput.trim()
-        if (keyword.isNotEmpty() && keyword !in selected && selected.size < MAX_KEYWORDS) {
+        if (keyword.isEmpty()) return
+        if (!isValidKeyword(keyword)) {
+            inputError = KEYWORD_ERROR
+            return
+        }
+        if (keyword !in selected && selected.size < MAX_KEYWORDS) {
             selected = selected + keyword
             onSave(selected)
         }
         customInput = ""
+        inputError = null
     }
 
     AlertDialog(
@@ -87,10 +102,12 @@ fun KeywordsDialog(
                 ) {
                     OutlinedTextField(
                         value = customInput,
-                        onValueChange = { customInput = it },
+                        onValueChange = { customInput = it; inputError = null },
                         modifier = Modifier.weight(1f).height(56.dp),
                         placeholder = { Text("직접 입력") },
                         singleLine = true,
+                        isError = inputError != null,
+                        supportingText = inputError?.let { error -> { Text(error) } },
                         shape = RoundedCornerShape(10.dp),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = Indigo,
@@ -109,20 +126,37 @@ fun KeywordsDialog(
                         Text("추가")
                     }
                 }
-                Spacer(Modifier.height(12.dp))
-                Button(
-                    onClick = { onFind(customInput.trim().ifEmpty { selected.lastOrNull().orEmpty() }) },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(10.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Indigo),
-                ) {
-                    Text("키워드로 공고 찾기")
-                }
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("닫기", color = TextGray)
             }
         },
         confirmButton = {
-            TextButton(onClick = onDismiss) {
-                Text("닫기", color = TextGray)
+            Button(
+                onClick = {
+                    val keyword = customInput.trim().ifEmpty { selected.lastOrNull().orEmpty() }
+                    if (keyword.isBlank()) return@Button
+                    if (!isValidKeyword(keyword)) {
+                        inputError = KEYWORD_ERROR
+                        return@Button
+                    }
+                    onFind(keyword)
+                },
+                enabled = !isSearching,
+                shape = RoundedCornerShape(10.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Indigo),
+            ) {
+                if (isSearching) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(18.dp),
+                        color = Color.White,
+                        strokeWidth = 2.dp,
+                    )
+                } else {
+                    Text("키워드로 공고 찾기")
+                }
             }
         },
     )

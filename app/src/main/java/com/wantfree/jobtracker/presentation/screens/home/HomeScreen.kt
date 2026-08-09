@@ -363,6 +363,7 @@ fun HomeScreen(
     if (state.showKeywordsDialog) {
         KeywordsDialog(
             currentKeywords = state.myKeywords,
+            isSearching = state.isSearching,
             onSave = viewModel::autoSaveKeywords,
             onFind = viewModel::findJobsWithKeyword,
             onDismiss = viewModel::closeKeywordsDialog,
