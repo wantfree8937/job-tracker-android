@@ -138,13 +138,13 @@ class HomeViewModel @Inject constructor(
 
     fun closeKeywordsDialog() = _uiState.update { it.copy(showKeywordsDialog = false) }
 
-    /** 관심 분야 저장 → 새로 추가된 키워드는 즉시 공고 수집(크롤링) */
-    fun saveKeywords(selected: List<String>) {
+    /** 관심 분야 자동 저장(다이얼로그 유지) → 새로 추가된 키워드는 즉시 공고 수집(크롤링) */
+    fun autoSaveKeywords(selected: List<String>) {
         val previousKeywords = _uiState.value.myKeywords
         viewModelScope.launch {
             authRepository.updateKeywords(selected)
                 .onSuccess { user ->
-                    _uiState.update { it.copy(myKeywords = user.keywords, showKeywordsDialog = false) }
+                    _uiState.update { it.copy(myKeywords = user.keywords) }
                     val newKeywords = selected.filterNot { it in previousKeywords }
                     if (newKeywords.isEmpty()) {
                         _uiState.update { it.copy(message = "관심 분야를 저장했어요") }
@@ -159,6 +159,29 @@ class HomeViewModel @Inject constructor(
                     if (_uiState.value.tab == HomeTab.COLLECTED) loadCollected()
                 }
                 .onFailure { e -> _uiState.update { it.copy(errorMessage = e.message ?: "관심 분야 저장에 실패했습니다") } }
+        }
+    }
+
+    /** 관심 분야 모달의 "키워드로 공고 찾기" — 미저장 키워드면 자동 저장 후 즉시 수집 */
+    fun findJobsWithKeyword(keyword: String) {
+        val trimmed = keyword.trim()
+        if (trimmed.isBlank() || _uiState.value.isSearching) return
+        viewModelScope.launch {
+            if (trimmed !in _uiState.value.myKeywords) {
+                authRepository.updateKeywords(_uiState.value.myKeywords + trimmed)
+                    .onSuccess { user -> _uiState.update { it.copy(myKeywords = user.keywords) } }
+            }
+            _uiState.update { it.copy(isSearching = true, errorMessage = null) }
+            jobRepository.searchCollectedJobs(trimmed)
+                .onSuccess { result ->
+                    _uiState.update {
+                        it.copy(isSearching = false, message = "${result.collected}건을 가져왔어요", showKeywordsDialog = false)
+                    }
+                    loadCollected()
+                }
+                .onFailure { e ->
+                    _uiState.update { it.copy(isSearching = false, errorMessage = e.message ?: "공고 검색에 실패했습니다") }
+                }
         }
     }
 

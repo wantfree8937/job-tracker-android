@@ -255,10 +255,6 @@ fun HomeScreen(
             keyboardController?.hide()
             viewModel.applyKeywordFilter()
         }
-        val runCollect = {
-            keyboardController?.hide()
-            viewModel.collectJobs()
-        }
 
         Row(
             modifier = Modifier
@@ -296,25 +292,6 @@ fun HomeScreen(
                 colors = ButtonDefaults.buttonColors(containerColor = Indigo),
             ) {
                 Text("검색")
-            }
-            Spacer(Modifier.width(8.dp))
-            Button(
-                onClick = runCollect,
-                enabled = !state.isSearching,
-                modifier = Modifier.width(80.dp),
-                contentPadding = PaddingValues(horizontal = 0.dp),
-                shape = RoundedCornerShape(10.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Indigo),
-            ) {
-                if (state.isSearching) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.height(18.dp).width(18.dp),
-                        color = Color.White,
-                        strokeWidth = 2.dp,
-                    )
-                } else {
-                    Text("가져오기")
-                }
             }
         }
 
@@ -386,7 +363,8 @@ fun HomeScreen(
     if (state.showKeywordsDialog) {
         KeywordsDialog(
             currentKeywords = state.myKeywords,
-            onSave = viewModel::saveKeywords,
+            onSave = viewModel::autoSaveKeywords,
+            onFind = viewModel::findJobsWithKeyword,
             onDismiss = viewModel::closeKeywordsDialog,
         )
     }

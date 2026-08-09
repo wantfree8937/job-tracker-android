@@ -11,10 +11,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
+import androidx.compose.material3.InputChip
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -28,8 +31,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
-// 웹 KEYWORD_OPTIONS와 동일
-private val KEYWORD_OPTIONS = listOf("안드로이드", "iOS", "앱 개발", "백엔드", "프론트엔드", "데이터 분석", "서버", "게임", "AI")
 private const val MAX_KEYWORDS = 10
 
 private val Indigo = Color(0xFF6366F1)
@@ -40,19 +41,22 @@ private val TextGray = Color(0xFF64748B)
 fun KeywordsDialog(
     currentKeywords: List<String>,
     onSave: (List<String>) -> Unit,
+    onFind: (String) -> Unit,
     onDismiss: () -> Unit,
 ) {
     var selected by remember { mutableStateOf(currentKeywords) }
     var customInput by remember { mutableStateOf("") }
 
-    fun toggle(keyword: String) {
-        selected = if (keyword in selected) selected - keyword else if (selected.size < MAX_KEYWORDS) selected + keyword else selected
+    fun remove(keyword: String) {
+        selected = selected - keyword
+        onSave(selected)
     }
 
     fun addCustom() {
         val keyword = customInput.trim()
         if (keyword.isNotEmpty() && keyword !in selected && selected.size < MAX_KEYWORDS) {
             selected = selected + keyword
+            onSave(selected)
         }
         customInput = ""
     }
@@ -62,16 +66,21 @@ fun KeywordsDialog(
         title = { Text("관심 분야 설정") },
         text = {
             Column {
-                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    items(KEYWORD_OPTIONS) { keyword ->
-                        FilterChip(
-                            selected = keyword in selected,
-                            onClick = { toggle(keyword) },
-                            label = { Text(keyword) },
-                        )
+                if (selected.isNotEmpty()) {
+                    LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        items(selected) { keyword ->
+                            InputChip(
+                                selected = false,
+                                onClick = { remove(keyword) },
+                                label = { Text(keyword) },
+                                trailingIcon = {
+                                    Icon(Icons.Default.Close, contentDescription = "$keyword 삭제")
+                                },
+                            )
+                        }
                     }
+                    Spacer(Modifier.height(12.dp))
                 }
-                Spacer(Modifier.height(12.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -100,14 +109,18 @@ fun KeywordsDialog(
                         Text("추가")
                     }
                 }
+                Spacer(Modifier.height(12.dp))
+                Button(
+                    onClick = { onFind(customInput.trim().ifEmpty { selected.lastOrNull().orEmpty() }) },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(10.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Indigo),
+                ) {
+                    Text("키워드로 공고 찾기")
+                }
             }
         },
         confirmButton = {
-            TextButton(onClick = { onSave(selected) }) {
-                Text("저장", color = Indigo)
-            }
-        },
-        dismissButton = {
             TextButton(onClick = onDismiss) {
                 Text("닫기", color = TextGray)
             }
