@@ -63,7 +63,11 @@ class HomeViewModel @Inject constructor(
 
     fun onCollectedKeywordChange(keyword: String) = _uiState.update { it.copy(collectedKeyword = keyword) }
 
-    fun searchCollected() {
+    /** 검색창 키워드로 기존 수집 공고를 필터링만 한다 (크롤링 없음) */
+    fun applyKeywordFilter() = loadCollected()
+
+    /** collect/search 크롤링 수집 — "가져오기" 버튼 전용 */
+    fun collectJobs() {
         val keyword = _uiState.value.collectedKeyword.trim()
         if (keyword.isBlank() || _uiState.value.isSearching) return
         viewModelScope.launch {

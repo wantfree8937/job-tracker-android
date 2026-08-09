@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -25,6 +26,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -207,8 +209,15 @@ fun HomeScreen(
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(bottom = 88.dp),
                     ) {
-                        items(state.jobs) { job ->
+                        itemsIndexed(state.jobs) { index, job ->
                             JobRow(job = job, onClick = { onNavigateToDetail(job.id) })
+                            if (index < state.jobs.lastIndex) {
+                                HorizontalDivider(
+                                    modifier = Modifier.padding(horizontal = 20.dp),
+                                    thickness = 1.dp,
+                                    color = BorderGray,
+                                )
+                            }
                         }
                     }
                 }
@@ -220,7 +229,11 @@ fun HomeScreen(
         val keyboardController = LocalSoftwareKeyboardController.current
         val runSearch = {
             keyboardController?.hide()
-            viewModel.searchCollected()
+            viewModel.applyKeywordFilter()
+        }
+        val runCollect = {
+            keyboardController?.hide()
+            viewModel.collectJobs()
         }
 
         Row(
@@ -253,8 +266,18 @@ fun HomeScreen(
             Spacer(Modifier.width(8.dp))
             Button(
                 onClick = runSearch,
+                modifier = Modifier.width(64.dp),
+                contentPadding = PaddingValues(horizontal = 0.dp),
+                shape = RoundedCornerShape(10.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Indigo),
+            ) {
+                Text("검색")
+            }
+            Spacer(Modifier.width(8.dp))
+            Button(
+                onClick = runCollect,
                 enabled = !state.isSearching,
-                modifier = Modifier.width(72.dp),
+                modifier = Modifier.width(80.dp),
                 contentPadding = PaddingValues(horizontal = 0.dp),
                 shape = RoundedCornerShape(10.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Indigo),
@@ -266,7 +289,7 @@ fun HomeScreen(
                         strokeWidth = 2.dp,
                     )
                 } else {
-                    Text("검색")
+                    Text("가져오기")
                 }
             }
         }
@@ -303,8 +326,15 @@ fun HomeScreen(
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(bottom = 88.dp),
                     ) {
-                        items(state.collectedJobs) { job ->
+                        itemsIndexed(state.collectedJobs) { index, job ->
                             CollectedJobRow(job = job, onScrap = { viewModel.scrap(job.id) })
+                            if (index < state.collectedJobs.lastIndex) {
+                                HorizontalDivider(
+                                    modifier = Modifier.padding(horizontal = 20.dp),
+                                    thickness = 1.dp,
+                                    color = BorderGray,
+                                )
+                            }
                         }
                     }
                 }
