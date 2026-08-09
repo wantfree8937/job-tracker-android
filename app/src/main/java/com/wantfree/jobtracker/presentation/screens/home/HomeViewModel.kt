@@ -59,7 +59,9 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
             jobRepository.getCollectedJobs()
-                .onSuccess { jobs -> _uiState.update { it.copy(collectedJobs = jobs, isLoading = false) } }
+                .onSuccess { jobs ->
+                    _uiState.update { it.copy(collectedJobs = jobs.filterNot { job -> job.scrapedByMe }, isLoading = false) }
+                }
                 .onFailure { e ->
                     _uiState.update {
                         it.copy(isLoading = false, errorMessage = e.message ?: "수집 공고를 불러오지 못했습니다")

@@ -98,7 +98,7 @@ fun HomeScreen(
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
             ),
-            modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp),
+            modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 24.dp, bottom = 16.dp),
         )
 
         TabRow(
@@ -119,6 +119,7 @@ fun HomeScreen(
         }
 
         if (state.tab == HomeTab.MINE) {
+        Spacer(Modifier.height(12.dp))
         OutlinedTextField(
             value = state.keyword,
             onValueChange = viewModel::onKeywordChange,
@@ -251,7 +252,7 @@ fun HomeScreen(
             onClick = onNavigateToForm,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(20.dp),
+                .padding(end = 20.dp, bottom = 32.dp),
             containerColor = Indigo,
             contentColor = Color.White,
             icon = { Icon(Icons.Filled.Add, contentDescription = null) },
