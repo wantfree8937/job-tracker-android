@@ -42,11 +42,7 @@ fun AppNavHost(startDestination: String = "login") {
             JobDetailScreen(
                 onBack = { navController.popBackStack() },
                 onNavigateToEdit = { jobId -> navController.navigate("job_form?jobId=$jobId") },
-                onDeleted = {
-                    navController.navigate("home") {
-                        popUpTo("home") { inclusive = true }
-                    }
-                },
+                onDeleted = { navController.popBackStack("home", inclusive = false) },
             )
         }
         composable(
@@ -54,11 +50,7 @@ fun AppNavHost(startDestination: String = "login") {
             arguments = listOf(navArgument("jobId") { type = NavType.StringType; nullable = true }),
         ) {
             JobFormScreen(
-                onSaved = {
-                    navController.navigate("home") {
-                        popUpTo("home") { inclusive = true }
-                    }
-                },
+                onSaved = { navController.popBackStack("home", inclusive = false) },
                 onBack = { navController.popBackStack() },
             )
         }

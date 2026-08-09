@@ -71,6 +71,11 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    /** 화면 재진입 시 현재 탭만 새로고침 (탭 전환 없음) */
+    fun refresh() {
+        if (_uiState.value.tab == HomeTab.COLLECTED) loadCollected() else load()
+    }
+
     fun onCollectedKeywordChange(keyword: String) = _uiState.update { it.copy(collectedKeyword = keyword) }
 
     /** 검색창 키워드로 기존 수집 공고를 필터링만 한다 (크롤링 없음) */
