@@ -1,7 +1,9 @@
 package com.wantfree.jobtracker.data.repository
 
 import com.wantfree.jobtracker.data.api.JobService
+import com.wantfree.jobtracker.data.model.job.JobPostingRequest
 import com.wantfree.jobtracker.data.model.job.JobPostingResponse
+import com.wantfree.jobtracker.data.model.job.JobPostingUpdateRequest
 import com.wantfree.jobtracker.domain.repository.JobRepository
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -16,4 +18,16 @@ class JobRepositoryImpl @Inject constructor(
 
     override suspend fun getStats(): Result<Map<String, Long>> =
         runCatching { jobService.getStats() }
+
+    override suspend fun getJob(id: Long): Result<JobPostingResponse> =
+        runCatching { jobService.getJob(id) }
+
+    override suspend fun createJob(request: JobPostingRequest): Result<JobPostingResponse> =
+        runCatching { jobService.createJob(request) }
+
+    override suspend fun updateJob(id: Long, request: JobPostingUpdateRequest): Result<JobPostingResponse> =
+        runCatching { jobService.updateJob(id, request) }
+
+    override suspend fun deleteJob(id: Long): Result<Unit> =
+        runCatching { jobService.deleteJob(id) }
 }

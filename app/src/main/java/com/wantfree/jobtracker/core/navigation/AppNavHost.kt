@@ -1,9 +1,13 @@
 package com.wantfree.jobtracker.core.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.wantfree.jobtracker.presentation.screens.detail.JobDetailScreen
+import com.wantfree.jobtracker.presentation.screens.form.JobFormScreen
 import com.wantfree.jobtracker.presentation.screens.home.HomeScreen
 import com.wantfree.jobtracker.presentation.screens.login.LoginScreen
 
@@ -20,6 +24,30 @@ fun AppNavHost() {
                 }
             )
         }
-        composable("home") { HomeScreen() }
+        composable("home") {
+            HomeScreen(
+                onNavigateToForm = { navController.navigate("job_form") },
+                onNavigateToDetail = { jobId -> navController.navigate("job_detail/$jobId") },
+            )
+        }
+        composable(
+            route = "job_detail/{jobId}",
+            arguments = listOf(navArgument("jobId") { type = NavType.LongType }),
+        ) {
+            JobDetailScreen(
+                onBack = { navController.popBackStack() },
+                onNavigateToEdit = { jobId -> navController.navigate("job_form?jobId=$jobId") },
+                onDeleted = { navController.popBackStack("home", inclusive = false) },
+            )
+        }
+        composable(
+            route = "job_form?jobId={jobId}",
+            arguments = listOf(navArgument("jobId") { type = NavType.StringType; nullable = true }),
+        ) {
+            JobFormScreen(
+                onSaved = { navController.popBackStack("home", inclusive = false) },
+                onBack = { navController.popBackStack() },
+            )
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.wantfree.jobtracker.presentation.screens.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,12 +21,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -39,6 +44,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.wantfree.jobtracker.data.model.job.JobPostingResponse
+import com.wantfree.jobtracker.presentation.screens.common.STATUSES
+import com.wantfree.jobtracker.presentation.screens.common.StatusBadge
+import com.wantfree.jobtracker.presentation.screens.common.StatusMeta
 import java.time.LocalDate
 
 // 웹 프론트(index.css) 디자인 토큰 — LoginScreen과 동일
@@ -53,31 +61,15 @@ private val ErrorRed = Color(0xFFDC2626)
 
 private val BrandGradient = Brush.linearGradient(listOf(Indigo, Purple))
 
-private data class StatusMeta(val key: String, val emoji: String, val label: String)
-
-private val STATUSES = listOf(
-    StatusMeta("WISH", "📋", "지원 예정"),
-    StatusMeta("APPLIED", "✉️", "지원함"),
-    StatusMeta("INTERVIEW", "🎤", "면접"),
-    StatusMeta("OFFER", "🎉", "합격"),
-    StatusMeta("REJECTED", "❌", "불합격"),
-)
-
-private fun badgeColors(status: String): Pair<Color, Color> = when (status) {
-    "WISH" -> Color(0xFFF1F5F9) to Color(0xFF475569)
-    "APPLIED" -> Color(0xFFDBEAFE) to Color(0xFF1D4ED8)
-    "INTERVIEW" -> Color(0xFFFFEDD5) to Color(0xFFC2410C)
-    "OFFER" -> Color(0xFFDCFCE7) to Color(0xFF15803D)
-    "REJECTED" -> Color(0xFFFEE2E2) to Color(0xFFB91C1C)
-    else -> Color(0xFFF1F5F9) to Color(0xFF475569)
-}
-
-private fun statusLabel(status: String): String = STATUSES.find { it.key == status }?.label ?: status
-
 @Composable
-fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
+fun HomeScreen(
+    onNavigateToForm: () -> Unit,
+    onNavigateToDetail: (Long) -> Unit,
+    viewModel: HomeViewModel = hiltViewModel(),
+) {
     val state by viewModel.uiState.collectAsState()
 
+    Box(modifier = Modifier.fillMaxSize()) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -174,11 +166,25 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                 }
                 else -> {
                     LazyColumn(modifier = Modifier.fillMaxSize()) {
-                        items(state.jobs) { job -> JobRow(job = job) }
+                        items(state.jobs) { job ->
+                            JobRow(job = job, onClick = { onNavigateToDetail(job.id) })
+                        }
                     }
                 }
             }
         }
+    }
+
+        ExtendedFloatingActionButton(
+            onClick = onNavigateToForm,
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(20.dp),
+            containerColor = Indigo,
+            contentColor = Color.White,
+            icon = { Icon(Icons.Filled.Add, contentDescription = null) },
+            text = { Text("공고 추가") },
+        )
     }
 }
 
@@ -203,26 +209,14 @@ private fun StatCard(meta: StatusMeta, count: Long) {
 }
 
 @Composable
-private fun StatusBadge(status: String) {
-    val (bg, fg) = badgeColors(status)
-    Surface(shape = RoundedCornerShape(6.dp), color = bg) {
-        Text(
-            text = statusLabel(status),
-            color = fg,
-            fontSize = 12.sp,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-        )
-    }
-}
-
-@Composable
-private fun JobRow(job: JobPostingResponse) {
+private fun JobRow(job: JobPostingResponse, onClick: () -> Unit) {
     val isPastDeadline = runCatching { LocalDate.parse(job.deadline).isBefore(LocalDate.now()) }
         .getOrDefault(false)
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable(onClick = onClick)
             .padding(horizontal = 20.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
