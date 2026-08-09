@@ -2,6 +2,7 @@ package com.wantfree.jobtracker.presentation.screens.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.wantfree.jobtracker.data.model.job.CollectedJobResponse
 import com.wantfree.jobtracker.data.model.job.JobPostingResponse
 import com.wantfree.jobtracker.domain.repository.JobRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -12,14 +13,20 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/** 홈 화면 탭 — 내 공고 / 수집 공고 */
+enum class HomeTab { MINE, COLLECTED }
+
 /** 홈(공고 목록) 화면 상태. selectedStatus == null 이면 전체 */
 data class HomeUiState(
+    val tab: HomeTab = HomeTab.MINE,
     val jobs: List<JobPostingResponse> = emptyList(),
     val stats: Map<String, Long> = emptyMap(),
     val selectedStatus: String? = null,
     val keyword: String = "",
+    val collectedJobs: List<CollectedJobResponse> = emptyList(),
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
+    val message: String? = null,
 )
 
 @HiltViewModel
@@ -42,6 +49,35 @@ class HomeViewModel @Inject constructor(
     fun onKeywordChange(keyword: String) = _uiState.update { it.copy(keyword = keyword) }
 
     fun search() = load()
+
+    fun onTabChange(tab: HomeTab) {
+        _uiState.update { it.copy(tab = tab) }
+        if (tab == HomeTab.COLLECTED) loadCollected()
+    }
+
+    fun loadCollected() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+            jobRepository.getCollectedJobs()
+                .onSuccess { jobs -> _uiState.update { it.copy(collectedJobs = jobs, isLoading = false) } }
+                .onFailure { e ->
+                    _uiState.update {
+                        it.copy(isLoading = false, errorMessage = e.message ?: "수집 공고를 불러오지 못했습니다")
+                    }
+                }
+        }
+    }
+
+    fun scrap(jobId: Long) {
+        viewModelScope.launch {
+            jobRepository.scrapCollectedJob(jobId)
+                .onSuccess { _uiState.update { it.copy(message = "스크랩했습니다") } }
+                .onFailure { e ->
+                    _uiState.update { it.copy(errorMessage = e.message ?: "스크랩에 실패했습니다") }
+                }
+            loadCollected()
+        }
+    }
 
     private fun load() {
         viewModelScope.launch {

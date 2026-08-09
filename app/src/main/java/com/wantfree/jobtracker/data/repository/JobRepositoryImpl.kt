@@ -1,6 +1,7 @@
 package com.wantfree.jobtracker.data.repository
 
 import com.wantfree.jobtracker.data.api.JobService
+import com.wantfree.jobtracker.data.model.job.CollectedJobResponse
 import com.wantfree.jobtracker.data.model.job.JobPostingRequest
 import com.wantfree.jobtracker.data.model.job.JobPostingResponse
 import com.wantfree.jobtracker.data.model.job.JobPostingUpdateRequest
@@ -30,4 +31,10 @@ class JobRepositoryImpl @Inject constructor(
 
     override suspend fun deleteJob(id: Long): Result<Unit> =
         runCatching { jobService.deleteJob(id) }
+
+    override suspend fun getCollectedJobs(): Result<List<CollectedJobResponse>> =
+        runCatching { jobService.getCollectedJobs() }
+
+    override suspend fun scrapCollectedJob(id: Long): Result<JobPostingResponse> =
+        runCatching { jobService.scrapCollectedJob(id) }
 }

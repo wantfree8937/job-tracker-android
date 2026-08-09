@@ -20,6 +20,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FilterChip
@@ -28,6 +30,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -43,6 +47,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.wantfree.jobtracker.data.model.job.CollectedJobResponse
 import com.wantfree.jobtracker.data.model.job.JobPostingResponse
 import com.wantfree.jobtracker.presentation.screens.common.STATUSES
 import com.wantfree.jobtracker.presentation.screens.common.StatusBadge
@@ -85,6 +90,24 @@ fun HomeScreen(
             modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp),
         )
 
+        TabRow(
+            selectedTabIndex = if (state.tab == HomeTab.MINE) 0 else 1,
+            containerColor = PageBackground,
+            contentColor = Indigo,
+        ) {
+            Tab(
+                selected = state.tab == HomeTab.MINE,
+                onClick = { viewModel.onTabChange(HomeTab.MINE) },
+                text = { Text("내 공고") },
+            )
+            Tab(
+                selected = state.tab == HomeTab.COLLECTED,
+                onClick = { viewModel.onTabChange(HomeTab.COLLECTED) },
+                text = { Text("수집 공고") },
+            )
+        }
+
+        if (state.tab == HomeTab.MINE) {
         OutlinedTextField(
             value = state.keyword,
             onValueChange = viewModel::onKeywordChange,
@@ -173,6 +196,53 @@ fun HomeScreen(
                 }
             }
         }
+        } else {
+        Spacer(Modifier.height(12.dp))
+        if (state.message != null) {
+            Text(
+                text = state.message!!,
+                color = Indigo,
+                fontSize = 13.sp,
+                modifier = Modifier.padding(horizontal = 20.dp),
+            )
+            Spacer(Modifier.height(8.dp))
+        }
+        Box(modifier = Modifier.fillMaxSize()) {
+            when {
+                state.isLoading && state.collectedJobs.isEmpty() -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center),
+                        color = Indigo,
+                    )
+                }
+                state.errorMessage != null -> {
+                    Text(
+                        text = state.errorMessage!!,
+                        color = ErrorRed,
+                        fontSize = 14.sp,
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .padding(horizontal = 32.dp),
+                    )
+                }
+                state.collectedJobs.isEmpty() -> {
+                    Text(
+                        text = "수집된 공고가 없습니다",
+                        color = TextGray,
+                        fontSize = 14.sp,
+                        modifier = Modifier.align(Alignment.Center),
+                    )
+                }
+                else -> {
+                    LazyColumn(modifier = Modifier.fillMaxSize()) {
+                        items(state.collectedJobs) { job ->
+                            CollectedJobRow(job = job, onScrap = { viewModel.scrap(job.id) })
+                        }
+                    }
+                }
+            }
+        }
+        }
     }
 
         ExtendedFloatingActionButton(
@@ -232,6 +302,51 @@ private fun JobRow(job: JobPostingResponse, onClick: () -> Unit) {
                 fontSize = 13.sp,
                 color = if (isPastDeadline) ErrorRed else TextGray,
             )
+        }
+    }
+}
+
+// 웹 프론트 SOURCE_CLASS 토큰과 동일
+private fun sourceBadgeColors(source: String): Pair<Color, Color> = when (source) {
+    "잡코리아" -> Color(0xFFDBEAFE) to Color(0xFF1D4ED8)
+    "원티드" -> Color(0xFFFFEDD5) to Color(0xFFC2410C)
+    else -> Color(0xFFF1F5F9) to Color(0xFF475569)
+}
+
+@Composable
+private fun CollectedJobRow(job: CollectedJobResponse, onScrap: () -> Unit) {
+    val (badgeBg, badgeFg) = sourceBadgeColors(job.source)
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(text = job.company, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextDark)
+            Text(text = job.title, fontSize = 14.sp, color = TextGray)
+            Spacer(Modifier.height(4.dp))
+            Surface(shape = RoundedCornerShape(6.dp), color = badgeBg) {
+                Text(
+                    text = job.source,
+                    color = badgeFg,
+                    fontSize = 12.sp,
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                )
+            }
+        }
+        Spacer(Modifier.width(12.dp))
+        Button(
+            onClick = onScrap,
+            enabled = !job.scrapedByMe,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Indigo,
+                disabledContainerColor = BorderGray,
+                disabledContentColor = TextGray,
+            ),
+        ) {
+            Text(if (job.scrapedByMe) "스크랩됨" else "스크랩")
         }
     }
 }

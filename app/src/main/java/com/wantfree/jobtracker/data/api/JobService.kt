@@ -1,5 +1,6 @@
 package com.wantfree.jobtracker.data.api
 
+import com.wantfree.jobtracker.data.model.job.CollectedJobResponse
 import com.wantfree.jobtracker.data.model.job.JobPostingRequest
 import com.wantfree.jobtracker.data.model.job.JobPostingResponse
 import com.wantfree.jobtracker.data.model.job.JobPostingUpdateRequest
@@ -36,4 +37,10 @@ interface JobService {
 
     @DELETE("api/jobs/{id}")
     suspend fun deleteJob(@Path("id") id: Long)
+
+    @GET("api/jobs/collected")
+    suspend fun getCollectedJobs(): List<CollectedJobResponse>
+
+    @POST("api/jobs/collected/{id}/scrap")
+    suspend fun scrapCollectedJob(@Path("id") id: Long): JobPostingResponse
 }
