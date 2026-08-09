@@ -34,8 +34,8 @@ class JobRepositoryImpl @Inject constructor(
     override suspend fun deleteJob(id: Long): Result<Unit> =
         runCatching { jobService.deleteJob(id) }
 
-    override suspend fun getCollectedJobs(): Result<List<CollectedJobResponse>> =
-        runCatching { jobService.getCollectedJobs() }
+    override suspend fun getCollectedJobs(keyword: String?): Result<List<CollectedJobResponse>> =
+        runCatching { jobService.getCollectedJobs(keyword) }
 
     override suspend fun scrapCollectedJob(id: Long): Result<JobPostingResponse> =
         runCatching { jobService.scrapCollectedJob(id) }

@@ -254,6 +254,8 @@ fun HomeScreen(
             Button(
                 onClick = runSearch,
                 enabled = !state.isSearching,
+                modifier = Modifier.width(72.dp),
+                contentPadding = PaddingValues(horizontal = 0.dp),
                 shape = RoundedCornerShape(10.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Indigo),
             ) {

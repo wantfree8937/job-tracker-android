@@ -82,7 +82,7 @@ class HomeViewModel @Inject constructor(
     fun loadCollected() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
-            jobRepository.getCollectedJobs()
+            jobRepository.getCollectedJobs(_uiState.value.collectedKeyword.trim().ifBlank { null })
                 .onSuccess { jobs ->
                     _uiState.update { it.copy(collectedJobs = jobs.filterNot { job -> job.scrapedByMe }, isLoading = false) }
                 }

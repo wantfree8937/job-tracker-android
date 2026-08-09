@@ -24,7 +24,7 @@ interface JobRepository {
 
     suspend fun deleteJob(id: Long): Result<Unit>
 
-    suspend fun getCollectedJobs(): Result<List<CollectedJobResponse>>
+    suspend fun getCollectedJobs(keyword: String? = null): Result<List<CollectedJobResponse>>
 
     suspend fun scrapCollectedJob(id: Long): Result<JobPostingResponse>
 

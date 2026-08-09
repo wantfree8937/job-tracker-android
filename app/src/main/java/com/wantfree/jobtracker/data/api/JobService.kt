@@ -41,7 +41,7 @@ interface JobService {
     suspend fun deleteJob(@Path("id") id: Long)
 
     @GET("api/jobs/collected")
-    suspend fun getCollectedJobs(): List<CollectedJobResponse>
+    suspend fun getCollectedJobs(@Query("keyword") keyword: String? = null): List<CollectedJobResponse>
 
     @POST("api/jobs/collected/{id}/scrap")
     suspend fun scrapCollectedJob(@Path("id") id: Long): JobPostingResponse
