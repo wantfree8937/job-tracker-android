@@ -53,6 +53,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -434,10 +435,10 @@ private fun JobRow(job: JobPostingResponse, onClick: () -> Unit) {
         StatusBadge(status = job.status)
         Spacer(Modifier.width(12.dp))
         Column(modifier = Modifier.weight(1f)) {
-            Text(text = job.companyName, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextDark)
-            Text(text = job.position, fontSize = 14.sp, color = TextGray)
+            Text(text = job.companyName, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextDark, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(text = job.position, fontSize = 14.sp, color = TextGray, maxLines = 1, overflow = TextOverflow.Ellipsis)
             metaLine(job.region, job.experience, job.industry)?.let { meta ->
-                Text(text = meta, fontSize = 12.sp, color = TextGray)
+                Text(text = meta, fontSize = 12.sp, color = TextGray, maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
         }
         if (!job.deadline.isNullOrBlank()) {
@@ -468,10 +469,10 @@ private fun CollectedJobRow(job: CollectedJobResponse, onScrap: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(modifier = Modifier.weight(1f)) {
-            Text(text = job.company, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextDark)
-            Text(text = job.title, fontSize = 14.sp, color = TextGray)
+            Text(text = job.company, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextDark, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(text = job.title, fontSize = 14.sp, color = TextGray, maxLines = 1, overflow = TextOverflow.Ellipsis)
             metaLine(job.region, job.experience, job.industry)?.let { meta ->
-                Text(text = meta, fontSize = 12.sp, color = TextGray)
+                Text(text = meta, fontSize = 12.sp, color = TextGray, maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
             Spacer(Modifier.height(4.dp))
             Surface(shape = RoundedCornerShape(6.dp), color = badgeBg) {
