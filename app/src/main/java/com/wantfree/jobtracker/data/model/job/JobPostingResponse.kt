@@ -15,6 +15,7 @@ data class JobPostingResponse(
     val region: String? = null,
     val experience: String? = null,
     val industry: String? = null,
+    val source: String? = null,
     val createdAt: String,
     val updatedAt: String,
 )

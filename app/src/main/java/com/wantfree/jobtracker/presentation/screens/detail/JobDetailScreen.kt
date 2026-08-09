@@ -39,6 +39,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.wantfree.jobtracker.presentation.screens.common.SourceBadge
 import com.wantfree.jobtracker.presentation.screens.common.StatusBadge
 import java.time.LocalDate
 
@@ -106,7 +107,10 @@ fun JobDetailScreen(
                             .padding(horizontal = 20.dp),
                         verticalArrangement = Arrangement.spacedBy(10.dp),
                     ) {
-                        StatusBadge(status = job.status)
+                        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                            StatusBadge(status = job.status)
+                            job.source?.let { SourceBadge(source = it) }
+                        }
                         Text(
                             text = job.companyName,
                             fontSize = 24.sp,

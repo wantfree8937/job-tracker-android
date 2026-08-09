@@ -64,6 +64,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.wantfree.jobtracker.data.model.job.CollectedJobResponse
 import com.wantfree.jobtracker.data.model.job.JobPostingResponse
 import com.wantfree.jobtracker.presentation.screens.common.STATUSES
+import com.wantfree.jobtracker.presentation.screens.common.SourceBadge
 import com.wantfree.jobtracker.presentation.screens.common.StatusBadge
 import com.wantfree.jobtracker.presentation.screens.common.StatusMeta
 import com.wantfree.jobtracker.presentation.screens.common.Toast
@@ -449,7 +450,21 @@ private fun JobRow(job: JobPostingResponse, onClick: () -> Unit) {
         StatusBadge(status = job.status)
         Spacer(Modifier.width(12.dp))
         Column(modifier = Modifier.weight(1f)) {
-            Text(text = job.companyName, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextDark, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = job.companyName,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = TextDark,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f, fill = false),
+                )
+                job.source?.let { source ->
+                    Spacer(Modifier.width(6.dp))
+                    SourceBadge(source = source, fontSize = 11.sp)
+                }
+            }
             Text(text = job.position, fontSize = 14.sp, color = TextGray, maxLines = 1, overflow = TextOverflow.Ellipsis)
             metaLine(job.region, job.experience, job.industry)?.let { meta ->
                 Text(text = meta, fontSize = 12.sp, color = TextGray, maxLines = 1, overflow = TextOverflow.Ellipsis)
@@ -465,17 +480,8 @@ private fun JobRow(job: JobPostingResponse, onClick: () -> Unit) {
     }
 }
 
-// 웹 프론트 SOURCE_CLASS 토큰과 동일
-private fun sourceBadgeColors(source: String): Pair<Color, Color> = when (source) {
-    "잡코리아" -> Color(0xFFDBEAFE) to Color(0xFF1D4ED8)
-    "원티드" -> Color(0xFFFFEDD5) to Color(0xFFC2410C)
-    else -> Color(0xFFF1F5F9) to Color(0xFF475569)
-}
-
 @Composable
 private fun CollectedJobRow(job: CollectedJobResponse, onScrap: () -> Unit) {
-    val (badgeBg, badgeFg) = sourceBadgeColors(job.source)
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -489,14 +495,7 @@ private fun CollectedJobRow(job: CollectedJobResponse, onScrap: () -> Unit) {
                 Text(text = meta, fontSize = 12.sp, color = TextGray, maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
             Spacer(Modifier.height(4.dp))
-            Surface(shape = RoundedCornerShape(6.dp), color = badgeBg) {
-                Text(
-                    text = job.source,
-                    color = badgeFg,
-                    fontSize = 12.sp,
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                )
-            }
+            SourceBadge(source = job.source)
         }
         Spacer(Modifier.width(12.dp))
         Button(

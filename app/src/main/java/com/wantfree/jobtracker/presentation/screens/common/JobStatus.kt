@@ -44,3 +44,24 @@ fun StatusBadge(status: String) {
         )
     }
 }
+
+// 공고 출처(잡코리아/원티드) 뱃지 — 홈/상세 화면이 공유
+fun sourceBadgeColors(source: String): Pair<Color, Color> = when (source) {
+    "잡코리아" -> Color(0xFFDBEAFE) to Color(0xFF1D4ED8)
+    "원티드" -> Color(0xFFFFEDD5) to Color(0xFFC2410C)
+    else -> Color(0xFFF1F5F9) to Color(0xFF475569)
+}
+
+@Composable
+fun SourceBadge(source: String, fontSize: androidx.compose.ui.unit.TextUnit = 12.sp) {
+    val (bg, fg) = sourceBadgeColors(source)
+    Surface(shape = RoundedCornerShape(6.dp), color = bg) {
+        Text(
+            text = source,
+            color = fg,
+            fontSize = fontSize,
+            maxLines = 1,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+        )
+    }
+}
