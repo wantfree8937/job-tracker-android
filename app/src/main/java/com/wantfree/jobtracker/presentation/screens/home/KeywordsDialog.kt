@@ -31,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 
 private const val MAX_KEYWORDS = 10
@@ -55,6 +56,7 @@ fun KeywordsDialog(
     var selected by remember { mutableStateOf(currentKeywords) }
     var customInput by remember { mutableStateOf("") }
     var inputError by remember { mutableStateOf<String?>(null) }
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     fun remove(keyword: String) {
         selected = selected - keyword
@@ -86,7 +88,7 @@ fun KeywordsDialog(
                         items(selected) { keyword ->
                             InputChip(
                                 selected = false,
-                                onClick = { remove(keyword) },
+                                onClick = { if (!isSearching) remove(keyword) },
                                 label = { Text(keyword) },
                                 trailingIcon = {
                                     Icon(Icons.Default.Close, contentDescription = "$keyword 삭제")
@@ -103,7 +105,8 @@ fun KeywordsDialog(
                     OutlinedTextField(
                         value = customInput,
                         onValueChange = { customInput = it; inputError = null },
-                        modifier = Modifier.weight(1f).height(56.dp),
+                        modifier = Modifier.weight(1f),
+                        enabled = !isSearching,
                         placeholder = { Text("직접 입력") },
                         singleLine = true,
                         isError = inputError != null,
@@ -120,6 +123,7 @@ fun KeywordsDialog(
                     Spacer(Modifier.width(8.dp))
                     Button(
                         onClick = { addCustom() },
+                        enabled = !isSearching,
                         shape = RoundedCornerShape(10.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Indigo),
                     ) {
@@ -129,7 +133,7 @@ fun KeywordsDialog(
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
+            TextButton(onClick = onDismiss, enabled = !isSearching) {
                 Text("닫기", color = TextGray)
             }
         },
@@ -142,9 +146,11 @@ fun KeywordsDialog(
                         inputError = KEYWORD_ERROR
                         return@Button
                     }
+                    keyboardController?.hide()
                     onFind(keyword)
                 },
                 enabled = !isSearching,
+                modifier = Modifier.width(140.dp),
                 shape = RoundedCornerShape(10.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Indigo),
             ) {

@@ -129,19 +129,19 @@ fun HomeScreen(
         }
 
         TabRow(
-            selectedTabIndex = if (state.tab == HomeTab.MINE) 0 else 1,
+            selectedTabIndex = if (state.tab == HomeTab.COLLECTED) 0 else 1,
             containerColor = PageBackground,
             contentColor = Indigo,
         ) {
             Tab(
-                selected = state.tab == HomeTab.MINE,
-                onClick = { viewModel.onTabChange(HomeTab.MINE) },
-                text = { Text("내 공고") },
-            )
-            Tab(
                 selected = state.tab == HomeTab.COLLECTED,
                 onClick = { viewModel.onTabChange(HomeTab.COLLECTED) },
                 text = { Text("전체 공고") },
+            )
+            Tab(
+                selected = state.tab == HomeTab.MINE,
+                onClick = { viewModel.onTabChange(HomeTab.MINE) },
+                text = { Text("내 공고") },
             )
         }
 

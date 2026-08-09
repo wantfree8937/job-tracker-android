@@ -142,29 +142,16 @@ class HomeViewModel @Inject constructor(
 
     fun closeKeywordsDialog() = _uiState.update { it.copy(showKeywordsDialog = false) }
 
-    /** 관심 분야 자동 저장(다이얼로그 유지) → 새로 추가된 키워드는 즉시 공고 수집(크롤링) */
+    /** 관심 분야 자동 저장(다이얼로그 유지) — 저장만 한다. 공고 수집은 findJobsWithKeyword에서만 */
     fun autoSaveKeywords(selected: List<String>) {
         if (selected.any { !isValidKeyword(it) }) {
             _uiState.update { it.copy(message = "키워드는 2~20자, 한글/영문/숫자만 가능해요") }
             return
         }
-        val previousKeywords = _uiState.value.myKeywords
         viewModelScope.launch {
             authRepository.updateKeywords(selected)
                 .onSuccess { user ->
-                    _uiState.update { it.copy(myKeywords = user.keywords) }
-                    val newKeywords = selected.filterNot { it in previousKeywords }
-                    if (newKeywords.isEmpty()) {
-                        _uiState.update { it.copy(message = "관심 분야를 저장했어요") }
-                        return@onSuccess
-                    }
-                    var totalCollected = 0
-                    newKeywords.forEach { keyword ->
-                        jobRepository.searchCollectedJobs(keyword).onSuccess { totalCollected += it.collected }
-                    }
-                    val label = if (newKeywords.size == 1) newKeywords.first() else "새 관심 분야"
-                    _uiState.update { it.copy(message = "$label 공고 ${totalCollected}건을 가져왔어요!") }
-                    if (_uiState.value.tab == HomeTab.COLLECTED) loadCollected()
+                    _uiState.update { it.copy(myKeywords = user.keywords, message = "관심 분야를 저장했어요") }
                 }
                 .onFailure { e -> _uiState.update { it.copy(errorMessage = e.message ?: "관심 분야 저장에 실패했습니다") } }
         }
