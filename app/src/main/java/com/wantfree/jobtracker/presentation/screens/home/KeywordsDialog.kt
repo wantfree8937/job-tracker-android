@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 
 private const val MAX_KEYWORDS = 10
 private const val KEYWORD_ERROR = "2~20자, 한글/영문/숫자만 가능해요"
@@ -81,7 +82,11 @@ fun KeywordsDialog(
     }
 
     AlertDialog(
-        onDismissRequest = onDismiss,
+        onDismissRequest = { if (!isSearching) onDismiss() },
+        properties = DialogProperties(
+            dismissOnBackPress = !isSearching,
+            dismissOnClickOutside = !isSearching,
+        ),
         title = { Text("관심 분야 설정") },
         text = {
             Column {
