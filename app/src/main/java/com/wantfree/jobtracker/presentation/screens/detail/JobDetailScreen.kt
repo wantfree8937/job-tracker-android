@@ -93,7 +93,7 @@ fun JobDetailScreen(
                 state.job != null -> {
                     val job = state.job!!
                     val isPastDeadline = runCatching {
-                        LocalDate.parse(job.deadline).isBefore(LocalDate.now())
+                        job.deadline?.let { LocalDate.parse(it).isBefore(LocalDate.now()) } ?: false
                     }.getOrDefault(false)
 
                     Column(
@@ -112,7 +112,7 @@ fun JobDetailScreen(
                         )
                         Text(text = job.position, fontSize = 16.sp, color = TextGray)
 
-                        if (job.deadline.isNotBlank()) {
+                        if (!job.deadline.isNullOrBlank()) {
                             Text(
                                 text = "마감일 ${job.deadline}",
                                 fontSize = 14.sp,
@@ -120,24 +120,24 @@ fun JobDetailScreen(
                             )
                         }
 
-                        if (job.link.isNotBlank()) {
+                        if (!job.link.isNullOrBlank()) {
                             val uriHandler = LocalUriHandler.current
                             Text(
                                 text = job.link,
                                 fontSize = 14.sp,
                                 color = Indigo,
-                                modifier = Modifier.clickable { uriHandler.openUri(job.link) },
+                                modifier = Modifier.clickable { uriHandler.openUri(job.link!!) },
                             )
                         }
 
-                        if (job.memo.isNotBlank()) {
+                        if (!job.memo.isNullOrBlank()) {
                             Text(
                                 text = "메모",
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Medium,
                                 color = TextDark,
                             )
-                            Text(text = job.memo, fontSize = 14.sp, color = TextGray)
+                            Text(text = job.memo!!, fontSize = 14.sp, color = TextGray)
                         }
 
                         Row(

@@ -61,10 +61,10 @@ class JobFormViewModel @Inject constructor(
                             isLoading = false,
                             companyName = job.companyName,
                             position = job.position,
-                            link = job.link,
-                            deadline = job.deadline.ifBlank { null },
+                            link = job.link ?: "",
+                            deadline = job.deadline?.takeIf { it.isNotBlank() },
                             status = job.status,
-                            memo = job.memo,
+                            memo = job.memo ?: "",
                         )
                     }
                 }

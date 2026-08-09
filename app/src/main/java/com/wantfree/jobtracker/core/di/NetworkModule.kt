@@ -26,6 +26,7 @@ object NetworkModule {
     @Singleton
     fun provideJson(): Json = Json {
         ignoreUnknownKeys = true // 백엔드가 필드 추가해도 안전
+        coerceInputValues = true // 서버가 null로 보내도 기본값으로 안전 처리
     }
 
     @Provides

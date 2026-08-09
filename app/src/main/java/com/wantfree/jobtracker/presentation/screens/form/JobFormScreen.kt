@@ -1,6 +1,7 @@
 package com.wantfree.jobtracker.presentation.screens.form
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -118,26 +119,28 @@ fun JobFormScreen(
             )
 
             FieldLabel("마감일")
-            OutlinedTextField(
-                value = state.deadline ?: "",
-                onValueChange = {},
-                readOnly = true,
-                placeholder = { Text("선택 안 함") },
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null,
-                    ) { showDatePicker = true },
-                trailingIcon = {
-                    Icon(Icons.Filled.CalendarMonth, contentDescription = "날짜 선택")
-                },
-                shape = RoundedCornerShape(10.dp),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Indigo,
-                    unfocusedBorderColor = BorderGray,
-                ),
-            )
+                    .height(56.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .border(1.dp, BorderGray, RoundedCornerShape(10.dp))
+                    .clickable { showDatePicker = true }
+                    .padding(horizontal = 14.dp),
+                contentAlignment = Alignment.CenterStart,
+            ) {
+                Text(
+                    text = state.deadline ?: "선택 안 함",
+                    color = if (state.deadline != null) TextDark else TextGray,
+                    fontSize = 15.sp,
+                )
+                Icon(
+                    imageVector = Icons.Filled.CalendarMonth,
+                    contentDescription = "날짜 선택",
+                    tint = TextGray,
+                    modifier = Modifier.align(Alignment.CenterEnd),
+                )
+            }
 
             FieldLabel("상태")
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
