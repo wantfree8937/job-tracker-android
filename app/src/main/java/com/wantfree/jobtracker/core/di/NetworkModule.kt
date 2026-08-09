@@ -2,6 +2,8 @@ package com.wantfree.jobtracker.core.di
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.wantfree.jobtracker.data.api.AuthService
+import com.wantfree.jobtracker.data.api.JobService
+import com.wantfree.jobtracker.data.local.AuthInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,7 +30,8 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(): OkHttpClient = OkHttpClient.Builder()
+    fun provideOkHttpClient(authInterceptor: AuthInterceptor): OkHttpClient = OkHttpClient.Builder()
+        .addInterceptor(authInterceptor)
         // Render 무료 플랜 콜드 스타트(최대 50초+) 대비 타임아웃 넉넉히
         .connectTimeout(90, TimeUnit.SECONDS)
         .readTimeout(90, TimeUnit.SECONDS)
@@ -47,4 +50,9 @@ object NetworkModule {
     @Singleton
     fun provideAuthService(retrofit: Retrofit): AuthService =
         retrofit.create(AuthService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideJobService(retrofit: Retrofit): JobService =
+        retrofit.create(JobService::class.java)
 }
