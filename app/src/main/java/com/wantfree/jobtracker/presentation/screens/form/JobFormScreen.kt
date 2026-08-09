@@ -89,7 +89,10 @@ fun JobFormScreen(
             .background(PageBackground)
             .verticalScroll(rememberScrollState()),
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(4.dp)) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(start = 4.dp, end = 4.dp, top = 24.dp, bottom = 4.dp),
+        ) {
             IconButton(onClick = onBack) {
                 Icon(Icons.Filled.ArrowBack, contentDescription = "뒤로")
             }

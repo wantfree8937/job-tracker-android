@@ -68,7 +68,10 @@ fun JobDetailScreen(
             .fillMaxSize()
             .background(PageBackground),
     ) {
-        IconButton(onClick = onBack, modifier = Modifier.padding(4.dp)) {
+        IconButton(
+            onClick = onBack,
+            modifier = Modifier.padding(start = 4.dp, end = 4.dp, top = 24.dp, bottom = 4.dp),
+        ) {
             Icon(Icons.Filled.ArrowBack, contentDescription = "뒤로")
         }
 
