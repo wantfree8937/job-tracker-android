@@ -29,6 +29,4 @@ interface JobRepository {
     suspend fun scrapCollectedJob(id: Long): Result<JobPostingResponse>
 
     suspend fun searchCollectedJobs(keyword: String): Result<JobSearchResult>
-
-    suspend fun getMyKeywords(): Result<List<String>>
 }

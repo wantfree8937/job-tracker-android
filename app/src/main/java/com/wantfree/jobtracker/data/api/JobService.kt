@@ -48,7 +48,4 @@ interface JobService {
 
     @POST("api/jobs/collect/search")
     suspend fun searchCollectedJobs(@Body request: JobSearchRequest): JobSearchResult
-
-    @GET("api/jobs/collect/keywords")
-    suspend fun getMyKeywords(): List<String>
 }

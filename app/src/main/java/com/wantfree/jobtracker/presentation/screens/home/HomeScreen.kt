@@ -235,7 +235,7 @@ fun HomeScreen(
                 modifier = Modifier
                     .weight(1f)
                     .height(56.dp),
-                placeholder = { Text("키워드로 공고 찾기 (예: 안드로이드)") },
+                placeholder = { Text("키워드로 공고 찾기") },
                 singleLine = true,
                 minLines = 1,
                 maxLines = 1,
@@ -267,33 +267,6 @@ fun HomeScreen(
                     Text("검색")
                 }
             }
-        }
-
-        if (state.myKeywords.isNotEmpty()) {
-            Spacer(Modifier.height(8.dp))
-            LazyRow(
-                contentPadding = PaddingValues(horizontal = 20.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                items(state.myKeywords) { keyword ->
-                    FilterChip(
-                        selected = false,
-                        onClick = {
-                            viewModel.onCollectedKeywordChange(keyword)
-                            runSearch()
-                        },
-                        label = { Text(keyword) },
-                    )
-                }
-            }
-        } else {
-            Spacer(Modifier.height(8.dp))
-            Text(
-                text = "관심분야를 설정하면 여기에 표시돼요. 회원가입 시 관심분야를 입력해보세요.",
-                color = TextGray,
-                fontSize = 13.sp,
-                modifier = Modifier.padding(horizontal = 20.dp),
-            )
         }
 
         Spacer(Modifier.height(12.dp))

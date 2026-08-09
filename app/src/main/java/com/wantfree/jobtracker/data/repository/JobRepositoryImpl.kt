@@ -42,7 +42,4 @@ class JobRepositoryImpl @Inject constructor(
 
     override suspend fun searchCollectedJobs(keyword: String): Result<JobSearchResult> =
         runCatching { jobService.searchCollectedJobs(JobSearchRequest(keyword)) }
-
-    override suspend fun getMyKeywords(): Result<List<String>> =
-        runCatching { jobService.getMyKeywords() }
 }

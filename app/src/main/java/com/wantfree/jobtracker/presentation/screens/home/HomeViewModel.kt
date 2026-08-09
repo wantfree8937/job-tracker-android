@@ -25,7 +25,6 @@ data class HomeUiState(
     val keyword: String = "",
     val collectedJobs: List<CollectedJobResponse> = emptyList(),
     val collectedKeyword: String = "",
-    val myKeywords: List<String> = emptyList(),
     val isLoading: Boolean = false,
     val isSearching: Boolean = false,
     val errorMessage: String? = null,
@@ -57,7 +56,6 @@ class HomeViewModel @Inject constructor(
         _uiState.update { it.copy(tab = tab) }
         if (tab == HomeTab.COLLECTED) {
             loadCollected()
-            loadMyKeywords()
         } else {
             load()
         }
@@ -78,13 +76,6 @@ class HomeViewModel @Inject constructor(
                 .onFailure { e ->
                     _uiState.update { it.copy(isSearching = false, errorMessage = e.message ?: "공고 검색에 실패했습니다") }
                 }
-        }
-    }
-
-    private fun loadMyKeywords() {
-        viewModelScope.launch {
-            jobRepository.getMyKeywords()
-                .onSuccess { keywords -> _uiState.update { it.copy(myKeywords = keywords) } }
         }
     }
 
