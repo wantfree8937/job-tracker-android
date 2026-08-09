@@ -450,21 +450,14 @@ private fun JobRow(job: JobPostingResponse, onClick: () -> Unit) {
         StatusBadge(status = job.status)
         Spacer(Modifier.width(12.dp))
         Column(modifier = Modifier.weight(1f)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = job.companyName,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = TextDark,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f, fill = false),
-                )
-                job.source?.let { source ->
-                    Spacer(Modifier.width(6.dp))
-                    SourceBadge(source = source, fontSize = 11.sp)
-                }
-            }
+            Text(
+                text = job.companyName,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = TextDark,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
             Text(text = job.position, fontSize = 14.sp, color = TextGray, maxLines = 1, overflow = TextOverflow.Ellipsis)
             metaLine(job.region, job.experience, job.industry)?.let { meta ->
                 Text(text = meta, fontSize = 12.sp, color = TextGray, maxLines = 1, overflow = TextOverflow.Ellipsis)
@@ -476,6 +469,10 @@ private fun JobRow(job: JobPostingResponse, onClick: () -> Unit) {
                 fontSize = 13.sp,
                 color = if (isPastDeadline) ErrorRed else TextGray,
             )
+        }
+        job.source?.let { source ->
+            Spacer(Modifier.width(6.dp))
+            SourceBadge(source = source, fontSize = 11.sp)
         }
     }
 }
