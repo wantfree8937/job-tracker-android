@@ -24,6 +24,8 @@ data class HomeUiState(
     val selectedStatus: String? = null,
     val keyword: String = "",
     val collectedJobs: List<CollectedJobResponse> = emptyList(),
+    val collectedKeyword: String = "",
+    val myKeywords: List<String> = emptyList(),
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
     val message: String? = null,
@@ -52,7 +54,37 @@ class HomeViewModel @Inject constructor(
 
     fun onTabChange(tab: HomeTab) {
         _uiState.update { it.copy(tab = tab) }
-        if (tab == HomeTab.COLLECTED) loadCollected() else load()
+        if (tab == HomeTab.COLLECTED) {
+            loadCollected()
+            loadMyKeywords()
+        } else {
+            load()
+        }
+    }
+
+    fun onCollectedKeywordChange(keyword: String) = _uiState.update { it.copy(collectedKeyword = keyword) }
+
+    fun searchCollected() {
+        val keyword = _uiState.value.collectedKeyword.trim()
+        if (keyword.isBlank()) return
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+            jobRepository.searchCollectedJobs(keyword)
+                .onSuccess { result ->
+                    _uiState.update { it.copy(isLoading = false, message = "공고 ${result.collected}개 수집") }
+                    loadCollected()
+                }
+                .onFailure { e ->
+                    _uiState.update { it.copy(isLoading = false, errorMessage = e.message ?: "공고 검색에 실패했습니다") }
+                }
+        }
+    }
+
+    private fun loadMyKeywords() {
+        viewModelScope.launch {
+            jobRepository.getMyKeywords()
+                .onSuccess { keywords -> _uiState.update { it.copy(myKeywords = keywords) } }
+        }
     }
 
     fun loadCollected() {

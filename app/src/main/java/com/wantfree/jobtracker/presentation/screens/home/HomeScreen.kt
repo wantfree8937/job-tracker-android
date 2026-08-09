@@ -43,6 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -114,7 +115,7 @@ fun HomeScreen(
             Tab(
                 selected = state.tab == HomeTab.COLLECTED,
                 onClick = { viewModel.onTabChange(HomeTab.COLLECTED) },
-                text = { Text("수집 공고") },
+                text = { Text("전체 공고") },
             )
         }
 
@@ -212,6 +213,64 @@ fun HomeScreen(
             }
         }
         } else {
+        Spacer(Modifier.height(12.dp))
+
+        val keyboardController = LocalSoftwareKeyboardController.current
+        val runSearch = {
+            keyboardController?.hide()
+            viewModel.searchCollected()
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            OutlinedTextField(
+                value = state.collectedKeyword,
+                onValueChange = viewModel::onCollectedKeywordChange,
+                modifier = Modifier.weight(1f),
+                placeholder = { Text("키워드로 공고 찾기 (예: 안드로이드)") },
+                singleLine = true,
+                shape = RoundedCornerShape(10.dp),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                keyboardActions = KeyboardActions(onSearch = { runSearch() }),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Indigo,
+                    unfocusedBorderColor = BorderGray,
+                    cursorColor = Indigo,
+                ),
+            )
+            Spacer(Modifier.width(8.dp))
+            Button(
+                onClick = runSearch,
+                shape = RoundedCornerShape(10.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Indigo),
+            ) {
+                Text("검색")
+            }
+        }
+
+        if (state.myKeywords.isNotEmpty()) {
+            Spacer(Modifier.height(8.dp))
+            LazyRow(
+                contentPadding = PaddingValues(horizontal = 20.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                items(state.myKeywords) { keyword ->
+                    FilterChip(
+                        selected = false,
+                        onClick = {
+                            viewModel.onCollectedKeywordChange(keyword)
+                            runSearch()
+                        },
+                        label = { Text(keyword) },
+                    )
+                }
+            }
+        }
+
         Spacer(Modifier.height(12.dp))
         Box(modifier = Modifier.fillMaxSize()) {
             when {

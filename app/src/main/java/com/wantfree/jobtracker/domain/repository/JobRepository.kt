@@ -4,6 +4,7 @@ import com.wantfree.jobtracker.data.model.job.CollectedJobResponse
 import com.wantfree.jobtracker.data.model.job.JobPostingRequest
 import com.wantfree.jobtracker.data.model.job.JobPostingResponse
 import com.wantfree.jobtracker.data.model.job.JobPostingUpdateRequest
+import com.wantfree.jobtracker.data.model.job.JobSearchResult
 
 /**
  * 공고 저장소 인터페이스 (클린 아키텍처 — domain 계층)
@@ -26,4 +27,8 @@ interface JobRepository {
     suspend fun getCollectedJobs(): Result<List<CollectedJobResponse>>
 
     suspend fun scrapCollectedJob(id: Long): Result<JobPostingResponse>
+
+    suspend fun searchCollectedJobs(keyword: String): Result<JobSearchResult>
+
+    suspend fun getMyKeywords(): Result<List<String>>
 }

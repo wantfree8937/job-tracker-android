@@ -4,6 +4,8 @@ import com.wantfree.jobtracker.data.model.job.CollectedJobResponse
 import com.wantfree.jobtracker.data.model.job.JobPostingRequest
 import com.wantfree.jobtracker.data.model.job.JobPostingResponse
 import com.wantfree.jobtracker.data.model.job.JobPostingUpdateRequest
+import com.wantfree.jobtracker.data.model.job.JobSearchRequest
+import com.wantfree.jobtracker.data.model.job.JobSearchResult
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -43,4 +45,10 @@ interface JobService {
 
     @POST("api/jobs/collected/{id}/scrap")
     suspend fun scrapCollectedJob(@Path("id") id: Long): JobPostingResponse
+
+    @POST("api/jobs/collect/search")
+    suspend fun searchCollectedJobs(@Body request: JobSearchRequest): JobSearchResult
+
+    @GET("api/jobs/collect/keywords")
+    suspend fun getMyKeywords(): List<String>
 }

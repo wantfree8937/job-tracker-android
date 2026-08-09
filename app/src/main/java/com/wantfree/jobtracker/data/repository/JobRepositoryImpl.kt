@@ -5,6 +5,8 @@ import com.wantfree.jobtracker.data.model.job.CollectedJobResponse
 import com.wantfree.jobtracker.data.model.job.JobPostingRequest
 import com.wantfree.jobtracker.data.model.job.JobPostingResponse
 import com.wantfree.jobtracker.data.model.job.JobPostingUpdateRequest
+import com.wantfree.jobtracker.data.model.job.JobSearchRequest
+import com.wantfree.jobtracker.data.model.job.JobSearchResult
 import com.wantfree.jobtracker.domain.repository.JobRepository
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -37,4 +39,10 @@ class JobRepositoryImpl @Inject constructor(
 
     override suspend fun scrapCollectedJob(id: Long): Result<JobPostingResponse> =
         runCatching { jobService.scrapCollectedJob(id) }
+
+    override suspend fun searchCollectedJobs(keyword: String): Result<JobSearchResult> =
+        runCatching { jobService.searchCollectedJobs(JobSearchRequest(keyword)) }
+
+    override suspend fun getMyKeywords(): Result<List<String>> =
+        runCatching { jobService.getMyKeywords() }
 }
