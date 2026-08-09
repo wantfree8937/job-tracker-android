@@ -463,16 +463,21 @@ private fun JobRow(job: JobPostingResponse, onClick: () -> Unit) {
                 Text(text = meta, fontSize = 12.sp, color = TextGray, maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
         }
-        if (!job.deadline.isNullOrBlank()) {
-            Text(
-                text = "~${job.deadline}",
-                fontSize = 13.sp,
-                color = if (isPastDeadline) ErrorRed else TextGray,
-            )
-        }
-        job.source?.let { source ->
-            Spacer(Modifier.width(6.dp))
-            SourceBadge(source = source, fontSize = 11.sp)
+        Column(
+            horizontalAlignment = Alignment.End,
+            modifier = Modifier.padding(start = 8.dp),
+        ) {
+            job.source?.let { source ->
+                SourceBadge(source = source, fontSize = 11.sp)
+            }
+            if (!job.deadline.isNullOrBlank()) {
+                if (job.source != null) Spacer(Modifier.height(4.dp))
+                Text(
+                    text = "~${job.deadline}",
+                    fontSize = 13.sp,
+                    color = if (isPastDeadline) ErrorRed else TextGray,
+                )
+            }
         }
     }
 }
