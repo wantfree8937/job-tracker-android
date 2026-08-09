@@ -11,4 +11,7 @@ data class JobPostingRequest(
     val deadline: String? = null, // "YYYY-MM-DD"
     val status: String = "WISH",
     val memo: String? = null,
+    val region: String? = null,
+    val experience: String? = null,
+    val industry: String? = null,
 )

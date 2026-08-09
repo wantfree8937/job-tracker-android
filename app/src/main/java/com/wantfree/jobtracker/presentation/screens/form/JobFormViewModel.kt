@@ -23,6 +23,9 @@ data class JobFormUiState(
     val deadline: String? = null, // "YYYY-MM-DD"
     val status: String = "WISH",
     val memo: String = "",
+    val region: String = "",
+    val experience: String = "",
+    val industry: String = "",
     val isLoading: Boolean = false,
     val isSaving: Boolean = false,
     val errorMessage: String? = null,
@@ -50,6 +53,9 @@ class JobFormViewModel @Inject constructor(
     fun onDeadlineChange(value: String?) = _uiState.update { it.copy(deadline = value) }
     fun onStatusChange(value: String) = _uiState.update { it.copy(status = value) }
     fun onMemoChange(value: String) = _uiState.update { it.copy(memo = value) }
+    fun onRegionChange(value: String) = _uiState.update { it.copy(region = value) }
+    fun onExperienceChange(value: String) = _uiState.update { it.copy(experience = value) }
+    fun onIndustryChange(value: String) = _uiState.update { it.copy(industry = value) }
 
     private fun load(id: Long) {
         viewModelScope.launch {
@@ -65,6 +71,9 @@ class JobFormViewModel @Inject constructor(
                             deadline = job.deadline?.takeIf { it.isNotBlank() },
                             status = job.status,
                             memo = job.memo ?: "",
+                            region = job.region ?: "",
+                            experience = job.experience ?: "",
+                            industry = job.industry ?: "",
                         )
                     }
                 }
@@ -107,6 +116,9 @@ class JobFormViewModel @Inject constructor(
                         deadline = state.deadline,
                         status = state.status,
                         memo = state.memo.ifBlank { null },
+                        region = state.region.ifBlank { null },
+                        experience = state.experience.ifBlank { null },
+                        industry = state.industry.ifBlank { null },
                     ),
                 )
             }

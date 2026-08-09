@@ -142,6 +142,15 @@ fun JobFormScreen(
                 )
             }
 
+            FieldLabel("지역")
+            FormTextField(value = state.region, onValueChange = viewModel::onRegionChange)
+
+            FieldLabel("경력")
+            FormTextField(value = state.experience, onValueChange = viewModel::onExperienceChange)
+
+            FieldLabel("업종")
+            FormTextField(value = state.industry, onValueChange = viewModel::onIndustryChange)
+
             FieldLabel("상태")
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 items(STATUSES) { meta ->

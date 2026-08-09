@@ -112,6 +112,14 @@ fun JobDetailScreen(
                         )
                         Text(text = job.position, fontSize = 16.sp, color = TextGray)
 
+                        listOfNotNull(job.region, job.experience, job.industry)
+                            .filter { it.isNotBlank() }
+                            .takeIf { it.isNotEmpty() }
+                            ?.joinToString(" · ")
+                            ?.let { meta ->
+                                Text(text = meta, fontSize = 13.sp, color = TextGray)
+                            }
+
                         if (!job.deadline.isNullOrBlank()) {
                             Text(
                                 text = "마감일 ${job.deadline}",

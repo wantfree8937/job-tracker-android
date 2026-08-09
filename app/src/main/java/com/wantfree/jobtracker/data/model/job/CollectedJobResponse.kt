@@ -11,6 +11,9 @@ data class CollectedJobResponse(
     val url: String,
     val source: String,
     val jobKey: String,
+    val region: String? = null,
+    val experience: String? = null,
+    val industry: String? = null,
     val createdAt: String,
     val scrapedByMe: Boolean,
 )

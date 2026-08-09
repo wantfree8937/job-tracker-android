@@ -200,7 +200,10 @@ fun HomeScreen(
                     )
                 }
                 else -> {
-                    LazyColumn(modifier = Modifier.fillMaxSize()) {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(bottom = 88.dp),
+                    ) {
                         items(state.jobs) { job ->
                             JobRow(job = job, onClick = { onNavigateToDetail(job.id) })
                         }
@@ -237,7 +240,10 @@ fun HomeScreen(
                     )
                 }
                 else -> {
-                    LazyColumn(modifier = Modifier.fillMaxSize()) {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(bottom = 88.dp),
+                    ) {
                         items(state.collectedJobs) { job ->
                             CollectedJobRow(job = job, onScrap = { viewModel.scrap(job.id) })
                         }
@@ -285,6 +291,13 @@ private fun StatCard(meta: StatusMeta, count: Long) {
     }
 }
 
+// 지역/경력/업종 중 값이 있는 것만 " · "로 join
+private fun metaLine(region: String?, experience: String?, industry: String?): String? =
+    listOfNotNull(region, experience, industry)
+        .filter { it.isNotBlank() }
+        .takeIf { it.isNotEmpty() }
+        ?.joinToString(" · ")
+
 @Composable
 private fun JobRow(job: JobPostingResponse, onClick: () -> Unit) {
     val isPastDeadline = runCatching { job.deadline?.let { LocalDate.parse(it).isBefore(LocalDate.now()) } ?: false }
@@ -302,6 +315,9 @@ private fun JobRow(job: JobPostingResponse, onClick: () -> Unit) {
         Column(modifier = Modifier.weight(1f)) {
             Text(text = job.companyName, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextDark)
             Text(text = job.position, fontSize = 14.sp, color = TextGray)
+            metaLine(job.region, job.experience, job.industry)?.let { meta ->
+                Text(text = meta, fontSize = 12.sp, color = TextGray)
+            }
         }
         if (!job.deadline.isNullOrBlank()) {
             Text(
@@ -333,6 +349,9 @@ private fun CollectedJobRow(job: CollectedJobResponse, onScrap: () -> Unit) {
         Column(modifier = Modifier.weight(1f)) {
             Text(text = job.company, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextDark)
             Text(text = job.title, fontSize = 14.sp, color = TextGray)
+            metaLine(job.region, job.experience, job.industry)?.let { meta ->
+                Text(text = meta, fontSize = 12.sp, color = TextGray)
+            }
             Spacer(Modifier.height(4.dp))
             Surface(shape = RoundedCornerShape(6.dp), color = badgeBg) {
                 Text(
