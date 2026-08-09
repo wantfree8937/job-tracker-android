@@ -28,6 +28,11 @@ fun AppNavHost() {
             HomeScreen(
                 onNavigateToForm = { navController.navigate("job_form") },
                 onNavigateToDetail = { jobId -> navController.navigate("job_detail/$jobId") },
+                onLogout = {
+                    navController.navigate("login") {
+                        popUpTo(0) { inclusive = true } // 전체 스택 제거
+                    }
+                },
             )
         }
         composable(

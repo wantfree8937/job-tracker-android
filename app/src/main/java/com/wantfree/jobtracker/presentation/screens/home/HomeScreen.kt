@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -35,12 +36,16 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -76,9 +81,11 @@ private val BrandGradient = Brush.linearGradient(listOf(Indigo, Purple))
 fun HomeScreen(
     onNavigateToForm: () -> Unit,
     onNavigateToDetail: (Long) -> Unit,
+    onLogout: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsState()
+    var showLogoutConfirm by remember { mutableStateOf(false) }
 
     // 스크랩 성공 토스트 3초 후 자동 제거 (LoginScreen과 동일 패턴)
     LaunchedEffect(state.message) {
@@ -88,21 +95,38 @@ fun HomeScreen(
         }
     }
 
+    LaunchedEffect(state.loggedOut) {
+        if (state.loggedOut) onLogout()
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(PageBackground),
     ) {
-        Text(
-            text = "Job Tracker",
-            style = MaterialTheme.typography.headlineMedium.copy(
-                brush = BrandGradient,
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-            ),
-            modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 24.dp, bottom = 16.dp),
-        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 20.dp, end = 20.dp, top = 24.dp, bottom = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = "Job Tracker",
+                style = MaterialTheme.typography.headlineMedium.copy(
+                    brush = BrandGradient,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                ),
+                modifier = Modifier.weight(1f),
+            )
+            TextButton(onClick = viewModel::onOpenKeywords) {
+                Text("관심 분야", color = Indigo, fontSize = 13.sp)
+            }
+            TextButton(onClick = { showLogoutConfirm = true }) {
+                Text("로그아웃", color = TextGray, fontSize = 13.sp)
+            }
+        }
 
         TabRow(
             selectedTabIndex = if (state.tab == HomeTab.MINE) 0 else 1,
@@ -357,6 +381,34 @@ fun HomeScreen(
         state.message?.let { message ->
             Toast(message = message, isError = false)
         }
+    }
+
+    if (state.showKeywordsDialog) {
+        KeywordsDialog(
+            currentKeywords = state.myKeywords,
+            onSave = viewModel::saveKeywords,
+            onDismiss = viewModel::closeKeywordsDialog,
+        )
+    }
+
+    if (showLogoutConfirm) {
+        AlertDialog(
+            onDismissRequest = { showLogoutConfirm = false },
+            title = { Text("로그아웃 하시겠습니까?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    showLogoutConfirm = false
+                    viewModel.logout()
+                }) {
+                    Text("확인", color = Indigo)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showLogoutConfirm = false }) {
+                    Text("취소", color = TextGray)
+                }
+            },
+        )
     }
 }
 

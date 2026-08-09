@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.wantfree.jobtracker.data.model.job.CollectedJobResponse
 import com.wantfree.jobtracker.data.model.job.JobPostingResponse
+import com.wantfree.jobtracker.domain.repository.AuthRepository
 import com.wantfree.jobtracker.domain.repository.JobRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,11 +30,15 @@ data class HomeUiState(
     val isSearching: Boolean = false,
     val errorMessage: String? = null,
     val message: String? = null,
+    val myKeywords: List<String> = emptyList(),
+    val showKeywordsDialog: Boolean = false,
+    val loggedOut: Boolean = false,
 )
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val jobRepository: JobRepository,
+    private val authRepository: AuthRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
@@ -121,6 +126,48 @@ class HomeViewModel @Inject constructor(
     }
 
     fun clearMessage() = _uiState.update { it.copy(message = null) }
+
+    /** 관심 분야 모달 열기 — 내 정보에서 현재 키워드를 불러온다 */
+    fun onOpenKeywords() {
+        viewModelScope.launch {
+            authRepository.getMe()
+                .onSuccess { user -> _uiState.update { it.copy(myKeywords = user.keywords, showKeywordsDialog = true) } }
+                .onFailure { e -> _uiState.update { it.copy(errorMessage = e.message ?: "내 정보를 불러오지 못했습니다") } }
+        }
+    }
+
+    fun closeKeywordsDialog() = _uiState.update { it.copy(showKeywordsDialog = false) }
+
+    /** 관심 분야 저장 → 새로 추가된 키워드는 즉시 공고 수집(크롤링) */
+    fun saveKeywords(selected: List<String>) {
+        val previousKeywords = _uiState.value.myKeywords
+        viewModelScope.launch {
+            authRepository.updateKeywords(selected)
+                .onSuccess { user ->
+                    _uiState.update { it.copy(myKeywords = user.keywords, showKeywordsDialog = false) }
+                    val newKeywords = selected.filterNot { it in previousKeywords }
+                    if (newKeywords.isEmpty()) {
+                        _uiState.update { it.copy(message = "관심 분야를 저장했어요") }
+                        return@onSuccess
+                    }
+                    var totalCollected = 0
+                    newKeywords.forEach { keyword ->
+                        jobRepository.searchCollectedJobs(keyword).onSuccess { totalCollected += it.collected }
+                    }
+                    val label = if (newKeywords.size == 1) newKeywords.first() else "새 관심 분야"
+                    _uiState.update { it.copy(message = "$label 공고 ${totalCollected}건을 가져왔어요!") }
+                    if (_uiState.value.tab == HomeTab.COLLECTED) loadCollected()
+                }
+                .onFailure { e -> _uiState.update { it.copy(errorMessage = e.message ?: "관심 분야 저장에 실패했습니다") } }
+        }
+    }
+
+    fun logout() {
+        viewModelScope.launch {
+            authRepository.logout()
+            _uiState.update { it.copy(loggedOut = true) }
+        }
+    }
 
     private fun load() {
         viewModelScope.launch {

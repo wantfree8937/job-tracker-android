@@ -2,6 +2,7 @@ package com.wantfree.jobtracker.data.repository
 
 import com.wantfree.jobtracker.data.api.AuthService
 import com.wantfree.jobtracker.data.local.TokenManager
+import com.wantfree.jobtracker.data.model.auth.KeywordsRequest
 import com.wantfree.jobtracker.data.model.auth.LoginRequest
 import com.wantfree.jobtracker.data.model.auth.SignUpRequest
 import com.wantfree.jobtracker.data.model.auth.TokenResponse
@@ -34,4 +35,9 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun logout() {
         tokenManager.clearToken()
     }
+
+    override suspend fun getMe(): Result<UserResponse> = runCatching { authService.getMe() }
+
+    override suspend fun updateKeywords(keywords: List<String>): Result<UserResponse> =
+        runCatching { authService.updateKeywords(KeywordsRequest(keywords)) }
 }

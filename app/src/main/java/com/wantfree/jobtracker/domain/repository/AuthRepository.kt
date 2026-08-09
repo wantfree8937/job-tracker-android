@@ -18,4 +18,10 @@ interface AuthRepository {
 
     /** 저장된 토큰 삭제 (로그아웃) */
     suspend fun logout()
+
+    /** 내 정보 조회 (관심 분야 포함) */
+    suspend fun getMe(): Result<UserResponse>
+
+    /** 관심 분야 저장 */
+    suspend fun updateKeywords(keywords: List<String>): Result<UserResponse>
 }
