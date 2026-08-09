@@ -21,6 +21,11 @@ class AuthInterceptor @Inject constructor(
         } else {
             original
         }
-        return chain.proceed(request)
+        val response = chain.proceed(request)
+        if (response.code == 401) {
+            // 토큰 만료/무효 — 저장된 토큰만 삭제 (다음 앱 시작 때 로그인 화면으로 자연스럽게 이동)
+            runBlocking { tokenManager.clearToken() }
+        }
+        return response
     }
 }

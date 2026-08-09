@@ -12,9 +12,9 @@ import com.wantfree.jobtracker.presentation.screens.home.HomeScreen
 import com.wantfree.jobtracker.presentation.screens.login.LoginScreen
 
 @Composable
-fun AppNavHost() {
+fun AppNavHost(startDestination: String = "login") {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = "login") {
+    NavHost(navController = navController, startDestination = startDestination) {
         composable("login") {
             LoginScreen(
                 onLoginSuccess = {

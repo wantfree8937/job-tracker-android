@@ -8,11 +8,19 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.wantfree.jobtracker.core.navigation.AppNavHost
+import com.wantfree.jobtracker.data.local.TokenManager
 import com.wantfree.jobtracker.presentation.theme.JobTrackerTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var tokenManager: TokenManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -25,9 +33,12 @@ class MainActivity : ComponentActivity() {
                 WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         }
 
+        // 저장된 토큰이 있으면 자동 로그인 (home으로 바로 진입)
+        val token = runBlocking { tokenManager.accessToken.first() }
+
         setContent {
             JobTrackerTheme {
-                AppNavHost()
+                AppNavHost(startDestination = if (token != null) "home" else "login")
             }
         }
     }
