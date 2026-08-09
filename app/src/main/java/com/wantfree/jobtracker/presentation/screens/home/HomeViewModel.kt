@@ -36,6 +36,7 @@ data class HomeUiState(
     val message: String? = null,
     val myKeywords: List<String> = emptyList(),
     val showKeywordsDialog: Boolean = false,
+    val dialogMessage: String? = null,
     val loggedOut: Boolean = false,
 )
 
@@ -135,23 +136,25 @@ class HomeViewModel @Inject constructor(
     fun onOpenKeywords() {
         viewModelScope.launch {
             authRepository.getMe()
-                .onSuccess { user -> _uiState.update { it.copy(myKeywords = user.keywords, showKeywordsDialog = true) } }
+                .onSuccess { user -> _uiState.update { it.copy(myKeywords = user.keywords, showKeywordsDialog = true, dialogMessage = null) } }
                 .onFailure { e -> _uiState.update { it.copy(errorMessage = e.message ?: "내 정보를 불러오지 못했습니다") } }
         }
     }
 
-    fun closeKeywordsDialog() = _uiState.update { it.copy(showKeywordsDialog = false) }
+    fun closeKeywordsDialog() = _uiState.update { it.copy(showKeywordsDialog = false, dialogMessage = null) }
+
+    fun clearDialogMessage() = _uiState.update { it.copy(dialogMessage = null) }
 
     /** 관심 분야 자동 저장(다이얼로그 유지) — 저장만 한다. 공고 수집은 findJobsWithKeyword에서만 */
     fun autoSaveKeywords(selected: List<String>) {
         if (selected.any { !isValidKeyword(it) }) {
-            _uiState.update { it.copy(message = "키워드는 2~20자, 한글/영문/숫자만 가능해요") }
+            _uiState.update { it.copy(errorMessage = "2~20자, 한글/영문/숫자만 가능해요") }
             return
         }
         viewModelScope.launch {
             authRepository.updateKeywords(selected)
                 .onSuccess { user ->
-                    _uiState.update { it.copy(myKeywords = user.keywords, message = "관심 분야를 저장했어요") }
+                    _uiState.update { it.copy(myKeywords = user.keywords, dialogMessage = "관심 분야를 저장했어요") }
                 }
                 .onFailure { e -> _uiState.update { it.copy(errorMessage = e.message ?: "관심 분야 저장에 실패했습니다") } }
         }
@@ -162,7 +165,7 @@ class HomeViewModel @Inject constructor(
         val trimmed = keyword.trim()
         if (trimmed.isBlank() || _uiState.value.isSearching) return
         if (!isValidKeyword(trimmed)) {
-            _uiState.update { it.copy(message = "키워드는 2~20자, 한글/영문/숫자만 가능해요") }
+            _uiState.update { it.copy(errorMessage = "2~20자, 한글/영문/숫자만 가능해요") }
             return
         }
         viewModelScope.launch {

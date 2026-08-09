@@ -35,12 +35,13 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 
 private const val MAX_KEYWORDS = 10
-private const val KEYWORD_ERROR = "키워드는 2~20자, 한글/영문/숫자만 가능해요"
+private const val KEYWORD_ERROR = "2~20자, 한글/영문/숫자만 가능해요"
 private val KEYWORD_REGEX = Regex("^[가-힣a-zA-Z0-9\\s]+$")
 
 private val Indigo = Color(0xFF6366F1)
 private val BorderGray = Color(0xFFE5E7EB)
 private val TextGray = Color(0xFF64748B)
+private val SuccessGreen = Color(0xFF15803D)
 
 private fun isValidKeyword(keyword: String) =
     keyword.length in 2..20 && KEYWORD_REGEX.matches(keyword)
@@ -49,6 +50,7 @@ private fun isValidKeyword(keyword: String) =
 fun KeywordsDialog(
     currentKeywords: List<String>,
     isSearching: Boolean,
+    dialogMessage: String?,
     onSave: (List<String>) -> Unit,
     onFind: (String) -> Unit,
     onDismiss: () -> Unit,
@@ -110,7 +112,7 @@ fun KeywordsDialog(
                         placeholder = { Text("직접 입력") },
                         singleLine = true,
                         isError = inputError != null,
-                        supportingText = inputError?.let { error -> { Text(error) } },
+                        supportingText = inputError?.let { error -> { Text(error, maxLines = 1) } },
                         shape = RoundedCornerShape(10.dp),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = Indigo,
@@ -129,6 +131,10 @@ fun KeywordsDialog(
                     ) {
                         Text("추가")
                     }
+                }
+                if (dialogMessage != null) {
+                    Spacer(Modifier.height(8.dp))
+                    Text(dialogMessage, color = SuccessGreen)
                 }
             }
         },
