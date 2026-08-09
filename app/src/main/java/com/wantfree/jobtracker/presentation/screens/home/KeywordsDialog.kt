@@ -150,7 +150,7 @@ fun KeywordsDialog(
                     onFind(keyword)
                 },
                 enabled = !isSearching,
-                modifier = Modifier.width(140.dp),
+                modifier = Modifier.width(180.dp),
                 shape = RoundedCornerShape(10.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Indigo),
             ) {
@@ -161,7 +161,7 @@ fun KeywordsDialog(
                         strokeWidth = 2.dp,
                     )
                 } else {
-                    Text("키워드로 공고 찾기")
+                    Text("키워드로 공고 찾기", maxLines = 1)
                 }
             }
         },

@@ -23,7 +23,7 @@ private fun isValidKeyword(keyword: String) = keyword.length in 2..20 && KEYWORD
 
 /** 홈(공고 목록) 화면 상태. selectedStatus == null 이면 전체 */
 data class HomeUiState(
-    val tab: HomeTab = HomeTab.MINE,
+    val tab: HomeTab = HomeTab.COLLECTED,
     val jobs: List<JobPostingResponse> = emptyList(),
     val stats: Map<String, Long> = emptyMap(),
     val selectedStatus: String? = null,
@@ -49,7 +49,7 @@ class HomeViewModel @Inject constructor(
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
     init {
-        load()
+        if (_uiState.value.tab == HomeTab.COLLECTED) loadCollected() else load()
     }
 
     fun onStatusSelected(status: String?) {
