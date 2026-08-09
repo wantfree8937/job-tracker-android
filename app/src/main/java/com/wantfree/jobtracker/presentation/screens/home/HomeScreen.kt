@@ -36,6 +36,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -52,6 +53,8 @@ import com.wantfree.jobtracker.data.model.job.JobPostingResponse
 import com.wantfree.jobtracker.presentation.screens.common.STATUSES
 import com.wantfree.jobtracker.presentation.screens.common.StatusBadge
 import com.wantfree.jobtracker.presentation.screens.common.StatusMeta
+import com.wantfree.jobtracker.presentation.screens.common.Toast
+import kotlinx.coroutines.delay
 import java.time.LocalDate
 
 // 웹 프론트(index.css) 디자인 토큰 — LoginScreen과 동일
@@ -73,6 +76,14 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsState()
+
+    // 스크랩 성공 토스트 3초 후 자동 제거 (LoginScreen과 동일 패턴)
+    LaunchedEffect(state.message) {
+        if (state.message != null) {
+            delay(3000)
+            viewModel.clearMessage()
+        }
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
     Column(
@@ -198,15 +209,6 @@ fun HomeScreen(
         }
         } else {
         Spacer(Modifier.height(12.dp))
-        if (state.message != null) {
-            Text(
-                text = state.message!!,
-                color = Indigo,
-                fontSize = 13.sp,
-                modifier = Modifier.padding(horizontal = 20.dp),
-            )
-            Spacer(Modifier.height(8.dp))
-        }
         Box(modifier = Modifier.fillMaxSize()) {
             when {
                 state.isLoading && state.collectedJobs.isEmpty() -> {
@@ -255,6 +257,10 @@ fun HomeScreen(
             icon = { Icon(Icons.Filled.Add, contentDescription = null) },
             text = { Text("공고 추가") },
         )
+
+        state.message?.let { message ->
+            Toast(message = message, isError = false)
+        }
     }
 }
 

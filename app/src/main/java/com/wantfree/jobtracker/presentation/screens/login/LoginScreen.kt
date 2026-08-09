@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -54,6 +53,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.wantfree.jobtracker.presentation.screens.common.Toast
 import kotlinx.coroutines.delay
 
 // 웹 프론트(index.css) 디자인 토큰과 동일
@@ -64,8 +64,6 @@ private val TextDark = Color(0xFF0F172A)
 private val TextGray = Color(0xFF64748B)
 private val BorderGray = Color(0xFFE5E7EB)
 private val SurfaceWhite = Color(0xFFFFFFFF)
-private val ErrorRed = Color(0xFFDC2626)
-private val SuccessGreen = Color(0xFF15803D)
 
 private val BrandGradient = Brush.linearGradient(listOf(Indigo, Purple))
 private val PageBackground = Brush.linearGradient(listOf(Indigo, Purple, Pink))
@@ -335,23 +333,4 @@ private fun AuthTextField(
             cursorColor = Indigo,
         ),
     )
-}
-
-@Composable
-private fun BoxScope.Toast(message: String, isError: Boolean) {
-    Surface(
-        modifier = Modifier
-            .align(Alignment.TopCenter)
-            .padding(top = 48.dp),
-        shape = RoundedCornerShape(10.dp),
-        color = if (isError) ErrorRed else SuccessGreen,
-        shadowElevation = 6.dp,
-    ) {
-        Text(
-            text = message,
-            color = Color.White,
-            fontSize = 14.sp,
-            modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp),
-        )
-    }
 }

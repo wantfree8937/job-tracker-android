@@ -52,7 +52,7 @@ class HomeViewModel @Inject constructor(
 
     fun onTabChange(tab: HomeTab) {
         _uiState.update { it.copy(tab = tab) }
-        if (tab == HomeTab.COLLECTED) loadCollected()
+        if (tab == HomeTab.COLLECTED) loadCollected() else load()
     }
 
     fun loadCollected() {
@@ -71,13 +71,21 @@ class HomeViewModel @Inject constructor(
     fun scrap(jobId: Long) {
         viewModelScope.launch {
             jobRepository.scrapCollectedJob(jobId)
-                .onSuccess { _uiState.update { it.copy(message = "스크랩했습니다") } }
+                .onSuccess {
+                    _uiState.update { state ->
+                        state.copy(
+                            collectedJobs = state.collectedJobs.filterNot { it.id == jobId },
+                            message = "스크랩했습니다",
+                        )
+                    }
+                }
                 .onFailure { e ->
                     _uiState.update { it.copy(errorMessage = e.message ?: "스크랩에 실패했습니다") }
                 }
-            loadCollected()
         }
     }
+
+    fun clearMessage() = _uiState.update { it.copy(message = null) }
 
     private fun load() {
         viewModelScope.launch {
