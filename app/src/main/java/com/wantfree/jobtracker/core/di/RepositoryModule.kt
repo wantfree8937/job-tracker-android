@@ -1,7 +1,9 @@
 package com.wantfree.jobtracker.core.di
 
+import com.wantfree.jobtracker.data.repository.AiRepositoryImpl
 import com.wantfree.jobtracker.data.repository.AuthRepositoryImpl
 import com.wantfree.jobtracker.data.repository.JobRepositoryImpl
+import com.wantfree.jobtracker.domain.repository.AiRepository
 import com.wantfree.jobtracker.domain.repository.AuthRepository
 import com.wantfree.jobtracker.domain.repository.JobRepository
 import dagger.Binds
@@ -22,4 +24,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindJobRepository(impl: JobRepositoryImpl): JobRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindAiRepository(impl: AiRepositoryImpl): AiRepository
 }

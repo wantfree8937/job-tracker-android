@@ -9,6 +9,7 @@ import androidx.navigation.navArgument
 import com.wantfree.jobtracker.presentation.screens.detail.JobDetailScreen
 import com.wantfree.jobtracker.presentation.screens.form.JobFormScreen
 import com.wantfree.jobtracker.presentation.screens.home.HomeScreen
+import com.wantfree.jobtracker.presentation.screens.interview.InterviewScreen
 import com.wantfree.jobtracker.presentation.screens.login.LoginScreen
 
 @Composable
@@ -43,6 +44,7 @@ fun AppNavHost(startDestination: String = "login") {
                 onBack = { navController.popBackStack() },
                 onNavigateToEdit = { jobId -> navController.navigate("job_form?jobId=$jobId") },
                 onDeleted = { navController.popBackStack("home", inclusive = false) },
+                onInterview = { jobId -> navController.navigate("interview/$jobId") },
             )
         }
         composable(
@@ -51,6 +53,14 @@ fun AppNavHost(startDestination: String = "login") {
         ) {
             JobFormScreen(
                 onSaved = { navController.popBackStack("home", inclusive = false) },
+                onBack = { navController.popBackStack() },
+            )
+        }
+        composable(
+            route = "interview/{jobId}",
+            arguments = listOf(navArgument("jobId") { type = NavType.LongType }),
+        ) {
+            InterviewScreen(
                 onBack = { navController.popBackStack() },
             )
         }

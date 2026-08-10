@@ -55,6 +55,7 @@ fun JobDetailScreen(
     onBack: () -> Unit,
     onNavigateToEdit: (Long) -> Unit,
     onDeleted: () -> Unit,
+    onInterview: (Long) -> Unit,
     viewModel: JobDetailViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsState()
@@ -155,8 +156,21 @@ fun JobDetailScreen(
                             Text(text = job.memo!!, fontSize = 14.sp, color = TextGray)
                         }
 
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 16.dp)
+                                .height(44.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(Indigo)
+                                .clickable { onInterview(job.id) },
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Text(text = "AI 면접 연습", color = Color.White, fontWeight = FontWeight.SemiBold)
+                        }
+
                         Row(
-                            modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+                            modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
                             horizontalArrangement = Arrangement.spacedBy(12.dp),
                         ) {
                             Box(

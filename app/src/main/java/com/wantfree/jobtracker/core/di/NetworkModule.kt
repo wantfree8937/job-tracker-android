@@ -1,6 +1,7 @@
 package com.wantfree.jobtracker.core.di
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import com.wantfree.jobtracker.data.api.AiService
 import com.wantfree.jobtracker.data.api.AuthService
 import com.wantfree.jobtracker.data.api.JobService
 import com.wantfree.jobtracker.data.local.AuthInterceptor
@@ -56,4 +57,9 @@ object NetworkModule {
     @Singleton
     fun provideJobService(retrofit: Retrofit): JobService =
         retrofit.create(JobService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideAiService(retrofit: Retrofit): AiService =
+        retrofit.create(AiService::class.java)
 }
