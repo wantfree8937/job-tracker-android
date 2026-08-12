@@ -4,6 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ProfileFileResponse(
+    val id: Long? = null,
     val fileName: String? = null,
     val fileType: String? = null,
     val text: String? = null,

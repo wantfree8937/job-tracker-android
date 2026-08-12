@@ -43,7 +43,7 @@ class InterviewViewModel @Inject constructor(
         }
         viewModelScope.launch {
             val hasText = profileRepository.getProfile().getOrNull()?.isNotBlank() == true
-            val hasFile = profileRepository.getFileInfo().getOrNull() != null
+            val hasFile = profileRepository.getFiles().getOrNull()?.isNotEmpty() == true
             _uiState.update { it.copy(hasResume = hasText || hasFile) }
         }
     }

@@ -3,7 +3,7 @@ package com.wantfree.jobtracker.domain.repository
 import com.wantfree.jobtracker.data.model.auth.ProfileFileResponse
 
 /**
- * 이력서(프로필) 저장소 인터페이스 — 텍스트/파일 조회 없음(404)은 null로 표현한다
+ * 이력서(프로필) 저장소 인터페이스 — 텍스트 조회 없음(404)은 null, 파일은 목록(최대 3개)으로 표현한다
  */
 interface ProfileRepository {
 
@@ -16,9 +16,9 @@ interface ProfileRepository {
     /** PDF/PPT/PPTX 업로드 (텍스트 추출은 백엔드가 수행) */
     suspend fun uploadFile(bytes: ByteArray, fileName: String, mimeType: String): Result<ProfileFileResponse>
 
-    /** 저장된 파일 정보 조회 (없으면 null) */
-    suspend fun getFileInfo(): Result<ProfileFileResponse?>
+    /** 저장된 파일 목록 조회 (최대 3개, 없으면 빈 목록) */
+    suspend fun getFiles(): Result<List<ProfileFileResponse>>
 
-    /** 저장된 파일 삭제 */
-    suspend fun deleteFile(): Result<Unit>
+    /** 저장된 파일 개별 삭제 */
+    suspend fun deleteFile(fileId: Long): Result<Unit>
 }

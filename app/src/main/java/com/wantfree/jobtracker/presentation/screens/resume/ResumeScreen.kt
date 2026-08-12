@@ -182,9 +182,10 @@ fun ResumeScreen(
                             Text(if (state.isBusy) "저장 중..." else "저장")
                         }
                     } else {
+                        val atMax = state.files.size >= PROFILE_FILE_MAX_COUNT
                         Button(
                             onClick = { filePicker.launch(RESUME_MIME_TYPES) },
-                            enabled = !state.isBusy,
+                            enabled = !state.isBusy && !atMax,
                             modifier = Modifier.fillMaxWidth().height(48.dp),
                             shape = RoundedCornerShape(10.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = Indigo),
@@ -193,34 +194,44 @@ fun ResumeScreen(
                             Spacer(Modifier.width(8.dp))
                             Text(if (state.isBusy) "업로드 중..." else "파일 업로드 (PDF, PPT, PPTX)")
                         }
+                        Text(
+                            text = "${state.files.size} / $PROFILE_FILE_MAX_COUNT 개 저장됨",
+                            fontSize = 12.sp,
+                            color = TextGray,
+                            modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+                        )
 
                         Spacer(Modifier.height(16.dp))
 
-                        if (state.savedFileName != null) {
-                            Surface(
-                                modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(12.dp),
-                                color = CardBackground,
-                            ) {
-                                Row(
-                                    modifier = Modifier.padding(16.dp),
-                                    verticalAlignment = Alignment.CenterVertically,
+                        if (state.files.isEmpty()) {
+                            Text(text = "저장된 파일이 없어요", fontSize = 14.sp, color = TextGray)
+                        } else {
+                            state.files.forEach { file ->
+                                Surface(
+                                    modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
+                                    shape = RoundedCornerShape(12.dp),
+                                    color = CardBackground,
                                 ) {
-                                    Icon(Icons.Filled.Description, contentDescription = null, tint = Indigo)
-                                    Spacer(Modifier.width(8.dp))
-                                    Text(
-                                        text = state.savedFileName!!,
-                                        modifier = Modifier.weight(1f),
-                                        fontSize = 14.sp,
-                                        color = TextDark,
-                                    )
-                                    OutlinedButton(
-                                        onClick = viewModel::deleteFile,
-                                        enabled = !state.isBusy,
+                                    Row(
+                                        modifier = Modifier.padding(16.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
                                     ) {
-                                        Icon(Icons.Filled.Close, contentDescription = "삭제", modifier = Modifier.height(16.dp))
-                                        Spacer(Modifier.width(4.dp))
-                                        Text("삭제")
+                                        Icon(Icons.Filled.Description, contentDescription = null, tint = Indigo)
+                                        Spacer(Modifier.width(8.dp))
+                                        Text(
+                                            text = file.fileName ?: "",
+                                            modifier = Modifier.weight(1f),
+                                            fontSize = 14.sp,
+                                            color = TextDark,
+                                        )
+                                        OutlinedButton(
+                                            onClick = { file.id?.let(viewModel::deleteFile) },
+                                            enabled = !state.isBusy,
+                                        ) {
+                                            Icon(Icons.Filled.Close, contentDescription = "삭제", modifier = Modifier.height(16.dp))
+                                            Spacer(Modifier.width(4.dp))
+                                            Text("삭제")
+                                        }
                                     }
                                 }
                             }

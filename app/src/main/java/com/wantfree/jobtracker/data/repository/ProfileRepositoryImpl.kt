@@ -33,12 +33,12 @@ class ProfileRepositoryImpl @Inject constructor(
             authService.uploadProfileFile(part)
         }
 
-    override suspend fun getFileInfo(): Result<ProfileFileResponse?> = runCatching {
-        authService.getProfileFile()
-    }.recoverNotFound(null)
+    override suspend fun getFiles(): Result<List<ProfileFileResponse>> = runCatching {
+        authService.getProfileFiles()
+    }.recoverNotFound(emptyList())
 
-    override suspend fun deleteFile(): Result<Unit> = runCatching {
-        authService.deleteProfileFile()
+    override suspend fun deleteFile(fileId: Long): Result<Unit> = runCatching {
+        authService.deleteProfileFile(fileId)
         Unit
     }
 
