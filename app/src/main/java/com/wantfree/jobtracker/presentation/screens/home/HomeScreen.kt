@@ -395,11 +395,11 @@ fun HomeScreen(
                     )
                     Spacer(Modifier.height(12.dp))
                     ExtendedFloatingActionButton(
-                        onClick = { fabExpanded = false; onNavigateToForm() },
+                        onClick = { fabExpanded = false; onResume() },
                         containerColor = SurfaceWhite,
                         contentColor = Indigo,
-                        icon = { Icon(Icons.Filled.Add, contentDescription = null) },
-                        text = { Text("공고 추가") },
+                        icon = { Icon(Icons.Filled.Description, contentDescription = null) },
+                        text = { Text("내 이력서") },
                     )
                     Spacer(Modifier.height(12.dp))
                     ExtendedFloatingActionButton(
@@ -411,13 +411,16 @@ fun HomeScreen(
                     )
                     Spacer(Modifier.height(12.dp))
                     ExtendedFloatingActionButton(
-                        onClick = { fabExpanded = false; onResume() },
+                        onClick = { fabExpanded = false; onNavigateToForm() },
                         containerColor = SurfaceWhite,
                         contentColor = Indigo,
-                        icon = { Icon(Icons.Filled.Description, contentDescription = null) },
-                        text = { Text("내 이력서") },
+                        icon = { Icon(Icons.Filled.Add, contentDescription = null) },
+                        text = { Text("공고 추가") },
                     )
                 }
+            }
+            if (fabExpanded) {
+                Spacer(Modifier.height(12.dp))
             }
             ExtendedFloatingActionButton(
                 onClick = { fabExpanded = !fabExpanded },
