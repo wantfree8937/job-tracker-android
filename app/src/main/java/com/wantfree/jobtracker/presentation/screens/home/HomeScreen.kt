@@ -1,5 +1,7 @@
 package com.wantfree.jobtracker.presentation.screens.home
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -51,6 +53,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.lifecycle.Lifecycle
@@ -488,9 +491,16 @@ private fun JobRow(job: JobPostingResponse, onClick: () -> Unit) {
 
 @Composable
 private fun CollectedJobRow(job: CollectedJobResponse, onScrap: () -> Unit) {
+    val context = LocalContext.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable(enabled = job.url.isNotBlank()) {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(job.url)).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                context.startActivity(intent)
+            }
             .padding(horizontal = 20.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -499,6 +509,9 @@ private fun CollectedJobRow(job: CollectedJobResponse, onScrap: () -> Unit) {
             Text(text = job.title, fontSize = 14.sp, color = TextGray, maxLines = 1, overflow = TextOverflow.Ellipsis)
             metaLine(job.region, job.experience, job.industry, job.deadline)?.let { meta ->
                 Text(text = meta, fontSize = 12.sp, color = TextGray, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            }
+            if (job.url.isNotBlank()) {
+                Text(text = job.url, fontSize = 11.sp, color = Indigo, maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
             Spacer(Modifier.height(4.dp))
             SourceBadge(source = job.source)
