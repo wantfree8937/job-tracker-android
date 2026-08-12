@@ -281,6 +281,55 @@ fun HomeScreen(
             viewModel.applyKeywordFilter()
         }
 
+        LazyRow(
+            contentPadding = PaddingValues(horizontal = 20.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            item {
+                FilterChip(
+                    selected = !state.mineOnly,
+                    onClick = { viewModel.onMineOnlyChange(false) },
+                    label = { Text("전체 공고") },
+                )
+            }
+            item {
+                FilterChip(
+                    selected = state.mineOnly,
+                    onClick = { viewModel.onMineOnlyChange(true) },
+                    label = { Text("내 관심 공고") },
+                )
+            }
+        }
+
+        Spacer(Modifier.height(8.dp))
+        LazyRow(
+            contentPadding = PaddingValues(horizontal = 20.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            item {
+                FilterChip(
+                    selected = state.sourceFilter == "ALL",
+                    onClick = { viewModel.onSourceFilterChange("ALL") },
+                    label = { Text("전체") },
+                )
+            }
+            item {
+                FilterChip(
+                    selected = state.sourceFilter == "잡코리아",
+                    onClick = { viewModel.onSourceFilterChange("잡코리아") },
+                    label = { Text("잡코리아") },
+                )
+            }
+            item {
+                FilterChip(
+                    selected = state.sourceFilter == "원티드",
+                    onClick = { viewModel.onSourceFilterChange("원티드") },
+                    label = { Text("원티드") },
+                )
+            }
+        }
+
+        Spacer(Modifier.height(12.dp))
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -333,55 +382,6 @@ fun HomeScreen(
                 colors = ButtonDefaults.buttonColors(containerColor = Indigo),
             ) {
                 Text(if (state.isCrawling) "불러오는 중..." else "공고 불러오기")
-            }
-        }
-
-        Spacer(Modifier.height(12.dp))
-        LazyRow(
-            contentPadding = PaddingValues(horizontal = 20.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            item {
-                FilterChip(
-                    selected = state.sourceFilter == "ALL",
-                    onClick = { viewModel.onSourceFilterChange("ALL") },
-                    label = { Text("전체") },
-                )
-            }
-            item {
-                FilterChip(
-                    selected = state.sourceFilter == "잡코리아",
-                    onClick = { viewModel.onSourceFilterChange("잡코리아") },
-                    label = { Text("잡코리아") },
-                )
-            }
-            item {
-                FilterChip(
-                    selected = state.sourceFilter == "원티드",
-                    onClick = { viewModel.onSourceFilterChange("원티드") },
-                    label = { Text("원티드") },
-                )
-            }
-        }
-
-        Spacer(Modifier.height(8.dp))
-        LazyRow(
-            contentPadding = PaddingValues(horizontal = 20.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            item {
-                FilterChip(
-                    selected = !state.mineOnly,
-                    onClick = { viewModel.onMineOnlyChange(false) },
-                    label = { Text("전체 공고") },
-                )
-            }
-            item {
-                FilterChip(
-                    selected = state.mineOnly,
-                    onClick = { viewModel.onMineOnlyChange(true) },
-                    label = { Text("내 관심 공고") },
-                )
             }
         }
 
