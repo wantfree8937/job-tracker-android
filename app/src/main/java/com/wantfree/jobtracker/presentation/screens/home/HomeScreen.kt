@@ -35,6 +35,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -44,8 +46,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.QuestionAnswer
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -104,6 +108,7 @@ fun HomeScreen(
     val state by viewModel.uiState.collectAsState()
     var showLogoutConfirm by remember { mutableStateOf(false) }
     var fabExpanded by remember { mutableStateOf(false) }
+    var showFilterDialog by remember { mutableStateOf(false) }
 
     // 스크랩 성공 토스트 3초 후 자동 제거 (LoginScreen과 동일 패턴)
     LaunchedEffect(state.message) {
@@ -281,49 +286,6 @@ fun HomeScreen(
             viewModel.applyKeywordFilter()
         }
 
-        LazyRow(
-            contentPadding = PaddingValues(horizontal = 20.dp),
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
-        ) {
-            item {
-                FilterChip(
-                    selected = !state.mineOnly,
-                    onClick = { viewModel.onMineOnlyChange(false) },
-                    label = { Text("전체 공고") },
-                )
-            }
-            item {
-                FilterChip(
-                    selected = state.mineOnly,
-                    onClick = { viewModel.onMineOnlyChange(true) },
-                    label = { Text("내 관심 공고") },
-                )
-            }
-            item { Spacer(Modifier.width(6.dp)) }
-            item {
-                FilterChip(
-                    selected = state.sourceFilter == "ALL",
-                    onClick = { viewModel.onSourceFilterChange("ALL") },
-                    label = { Text("전체") },
-                )
-            }
-            item {
-                FilterChip(
-                    selected = state.sourceFilter == "잡코리아",
-                    onClick = { viewModel.onSourceFilterChange("잡코리아") },
-                    label = { Text("잡코리아") },
-                )
-            }
-            item {
-                FilterChip(
-                    selected = state.sourceFilter == "원티드",
-                    onClick = { viewModel.onSourceFilterChange("원티드") },
-                    label = { Text("원티드") },
-                )
-            }
-        }
-
-        Spacer(Modifier.height(8.dp))
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -361,21 +323,10 @@ fun HomeScreen(
             ) {
                 Text("검색")
             }
-            Spacer(Modifier.width(8.dp))
-            Button(
-                onClick = viewModel::crawl,
-                enabled = !state.isCrawling,
-                contentPadding = PaddingValues(horizontal = 12.dp),
-                shape = RoundedCornerShape(10.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Indigo),
-            ) {
-                Text(if (state.isCrawling) "불러오는 중..." else "불러오기")
-            }
         }
 
         val visibleCollected = state.collectedJobs.filter { job ->
-            (state.sourceFilter == "ALL" || job.source == state.sourceFilter) &&
-                (!state.mineOnly || job.scrapedByMe)
+            state.sourceFilter == "ALL" || job.source == state.sourceFilter
         }
 
         Spacer(Modifier.height(8.dp))
@@ -461,6 +412,22 @@ fun HomeScreen(
                     )
                     Spacer(Modifier.height(12.dp))
                     ExtendedFloatingActionButton(
+                        onClick = { fabExpanded = false; viewModel.crawl() },
+                        containerColor = SurfaceWhite,
+                        contentColor = Indigo,
+                        icon = { Icon(Icons.Filled.Refresh, contentDescription = null) },
+                        text = { Text(if (state.isCrawling) "불러오는 중..." else "공고 불러오기") },
+                    )
+                    Spacer(Modifier.height(12.dp))
+                    ExtendedFloatingActionButton(
+                        onClick = { fabExpanded = false; showFilterDialog = true },
+                        containerColor = SurfaceWhite,
+                        contentColor = Indigo,
+                        icon = { Icon(Icons.Filled.FilterList, contentDescription = null) },
+                        text = { Text("필터") },
+                    )
+                    Spacer(Modifier.height(12.dp))
+                    ExtendedFloatingActionButton(
                         onClick = { fabExpanded = false; viewModel.onOpenKeywords() },
                         containerColor = SurfaceWhite,
                         contentColor = Indigo,
@@ -502,6 +469,45 @@ fun HomeScreen(
             onSave = viewModel::autoSaveKeywords,
             onFind = viewModel::findJobsWithKeyword,
             onDismiss = viewModel::closeKeywordsDialog,
+        )
+    }
+
+    if (showFilterDialog) {
+        AlertDialog(
+            onDismissRequest = { showFilterDialog = false },
+            title = { Text("공고 출처 필터") },
+            text = {
+                Column {
+                    listOf("ALL" to "전체", "잡코리아" to "잡코리아", "원티드" to "원티드").forEach { (value, label) ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    viewModel.onSourceFilterChange(value)
+                                    showFilterDialog = false
+                                }
+                                .padding(vertical = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            RadioButton(
+                                selected = state.sourceFilter == value,
+                                onClick = {
+                                    viewModel.onSourceFilterChange(value)
+                                    showFilterDialog = false
+                                },
+                                colors = RadioButtonDefaults.colors(selectedColor = Indigo),
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            Text(label, color = TextDark)
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showFilterDialog = false }) {
+                    Text("닫기", color = Indigo)
+                }
+            },
         )
     }
 

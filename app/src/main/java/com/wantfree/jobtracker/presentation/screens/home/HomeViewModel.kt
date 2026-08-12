@@ -32,7 +32,6 @@ data class HomeUiState(
     val collectedJobs: List<CollectedJobResponse> = emptyList(),
     val collectedKeyword: String = "",
     val sourceFilter: String = "ALL",
-    val mineOnly: Boolean = false,
     val isLoading: Boolean = false,
     val isSearching: Boolean = false,
     val isCrawling: Boolean = false,
@@ -86,8 +85,6 @@ class HomeViewModel @Inject constructor(
     fun applyKeywordFilter() = loadCollected()
 
     fun onSourceFilterChange(filter: String) = _uiState.update { it.copy(sourceFilter = filter) }
-
-    fun onMineOnlyChange(mineOnly: Boolean) = _uiState.update { it.copy(mineOnly = mineOnly) }
 
     /** 관심 키워드 전체 크롤링 — "공고 불러오기" 버튼 전용 */
     fun crawl() {
