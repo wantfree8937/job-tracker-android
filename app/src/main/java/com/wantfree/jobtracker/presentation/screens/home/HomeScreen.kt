@@ -396,6 +396,14 @@ fun HomeScreen(
             AnimatedVisibility(visible = fabExpanded) {
                 Column(horizontalAlignment = Alignment.End) {
                     ExtendedFloatingActionButton(
+                        onClick = { fabExpanded = false; viewModel.crawl() },
+                        containerColor = SurfaceWhite,
+                        contentColor = Indigo,
+                        icon = { Icon(Icons.Filled.Refresh, contentDescription = null) },
+                        text = { Text(if (state.isCrawling) "불러오는 중..." else "공고 불러오기") },
+                    )
+                    Spacer(Modifier.height(12.dp))
+                    ExtendedFloatingActionButton(
                         onClick = { fabExpanded = false; onInterview() },
                         containerColor = SurfaceWhite,
                         contentColor = Indigo,
@@ -412,22 +420,6 @@ fun HomeScreen(
                     )
                     Spacer(Modifier.height(12.dp))
                     ExtendedFloatingActionButton(
-                        onClick = { fabExpanded = false; viewModel.crawl() },
-                        containerColor = SurfaceWhite,
-                        contentColor = Indigo,
-                        icon = { Icon(Icons.Filled.Refresh, contentDescription = null) },
-                        text = { Text(if (state.isCrawling) "불러오는 중..." else "공고 불러오기") },
-                    )
-                    Spacer(Modifier.height(12.dp))
-                    ExtendedFloatingActionButton(
-                        onClick = { fabExpanded = false; showFilterDialog = true },
-                        containerColor = SurfaceWhite,
-                        contentColor = Indigo,
-                        icon = { Icon(Icons.Filled.FilterList, contentDescription = null) },
-                        text = { Text("필터") },
-                    )
-                    Spacer(Modifier.height(12.dp))
-                    ExtendedFloatingActionButton(
                         onClick = { fabExpanded = false; viewModel.onOpenKeywords() },
                         containerColor = SurfaceWhite,
                         contentColor = Indigo,
@@ -441,6 +433,14 @@ fun HomeScreen(
                         contentColor = Indigo,
                         icon = { Icon(Icons.Filled.Add, contentDescription = null) },
                         text = { Text("공고 추가") },
+                    )
+                    Spacer(Modifier.height(12.dp))
+                    ExtendedFloatingActionButton(
+                        onClick = { fabExpanded = false; showFilterDialog = true },
+                        containerColor = SurfaceWhite,
+                        contentColor = Indigo,
+                        icon = { Icon(Icons.Filled.FilterList, contentDescription = null) },
+                        text = { Text("필터") },
                     )
                 }
             }
