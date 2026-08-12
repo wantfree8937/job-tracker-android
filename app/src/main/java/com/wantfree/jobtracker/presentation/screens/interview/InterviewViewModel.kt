@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.wantfree.jobtracker.data.model.job.JobPostingResponse
 import com.wantfree.jobtracker.domain.repository.AiRepository
 import com.wantfree.jobtracker.domain.repository.JobRepository
-import com.wantfree.jobtracker.domain.repository.ProfileRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,7 +20,6 @@ data class InterviewUiState(
     val difficulty: String = "ENTRY",
     val questions: List<String> = emptyList(),
     val usedResume: Boolean? = null,
-    val hasResume: Boolean = false,
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
 )
@@ -30,7 +28,6 @@ data class InterviewUiState(
 class InterviewViewModel @Inject constructor(
     private val jobRepository: JobRepository,
     private val aiRepository: AiRepository,
-    private val profileRepository: ProfileRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(InterviewUiState())
@@ -40,11 +37,6 @@ class InterviewViewModel @Inject constructor(
         viewModelScope.launch {
             jobRepository.getJobs(status = null, keyword = null)
                 .onSuccess { jobs -> _uiState.update { it.copy(myJobs = jobs) } }
-        }
-        viewModelScope.launch {
-            val hasText = profileRepository.getProfile().getOrNull()?.isNotBlank() == true
-            val hasFile = profileRepository.getFiles().getOrNull()?.isNotEmpty() == true
-            _uiState.update { it.copy(hasResume = hasText || hasFile) }
         }
     }
 

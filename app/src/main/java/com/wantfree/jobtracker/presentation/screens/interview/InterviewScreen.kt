@@ -100,10 +100,12 @@ fun InterviewScreen(
             contentPadding = PaddingValues(horizontal = 20.dp, vertical = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            if (state.hasResume) {
-                item {
-                    Text(text = "📄 이력서 저장됨", fontSize = 13.sp, color = TextGray)
-                }
+            item {
+                Text(
+                    text = "📄 AI가 저장된 이력서/포트폴리오를 참고해 질문을 만들어요",
+                    fontSize = 13.sp,
+                    color = TextGray,
+                )
             }
 
             item {

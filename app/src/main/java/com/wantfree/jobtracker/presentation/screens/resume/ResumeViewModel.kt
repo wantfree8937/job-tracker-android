@@ -21,7 +21,6 @@ data class ResumeUiState(
     val profileText: String = "",
     val files: List<ProfileFileResponse> = emptyList(),
     val activeTab: ResumeTab = ResumeTab.TEXT,
-    val isLoading: Boolean = true,
     val isBusy: Boolean = false, // 저장/업로드/삭제 중 — 이탈 방지
     val message: String? = null,
     val isError: Boolean = false,
@@ -41,7 +40,6 @@ class ResumeViewModel @Inject constructor(
             val filesResult = profileRepository.getFiles()
             _uiState.update {
                 it.copy(
-                    isLoading = false,
                     profileText = profileResult.getOrNull().orEmpty(),
                     files = filesResult.getOrNull().orEmpty(),
                 )

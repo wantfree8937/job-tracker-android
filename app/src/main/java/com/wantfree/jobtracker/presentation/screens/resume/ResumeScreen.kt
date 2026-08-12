@@ -22,7 +22,6 @@ import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.UploadFile
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
@@ -138,16 +137,11 @@ fun ResumeScreen(
                 )
             }
 
-            if (state.isLoading) {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = Indigo)
-                }
-            } else {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(20.dp),
-                ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(20.dp),
+            ) {
                     if (state.activeTab == ResumeTab.TEXT) {
                         OutlinedTextField(
                             value = state.profileText,
@@ -238,7 +232,6 @@ fun ResumeScreen(
                         }
                     }
                 }
-            }
         }
 
         state.message?.let { message ->
