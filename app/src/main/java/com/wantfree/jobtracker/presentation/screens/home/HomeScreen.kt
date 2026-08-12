@@ -43,7 +43,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.QuestionAnswer
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -144,9 +146,6 @@ fun HomeScreen(
                 ),
                 modifier = Modifier.weight(1f),
             )
-            TextButton(onClick = viewModel::onOpenKeywords) {
-                Text("관심 분야", color = Indigo, fontSize = 13.sp)
-            }
             TextButton(onClick = { showLogoutConfirm = true }) {
                 Text("로그아웃", color = TextGray, fontSize = 13.sp)
             }
@@ -368,6 +367,15 @@ fun HomeScreen(
         }
     }
 
+        if (fabExpanded) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.4f))
+                    .clickable { fabExpanded = false },
+            )
+        }
+
         Column(
             horizontalAlignment = Alignment.End,
             modifier = Modifier
@@ -392,14 +400,23 @@ fun HomeScreen(
                         text = { Text("공고 추가") },
                     )
                     Spacer(Modifier.height(12.dp))
+                    ExtendedFloatingActionButton(
+                        onClick = { fabExpanded = false; viewModel.onOpenKeywords() },
+                        containerColor = SurfaceWhite,
+                        contentColor = Indigo,
+                        icon = { Icon(Icons.Filled.Star, contentDescription = null) },
+                        text = { Text("관심 분야") },
+                    )
+                    Spacer(Modifier.height(12.dp))
+                    // 내 이력서 항목은 나중에 여기 추가 (icon = Icons.Filled.Description 등)
                 }
             }
             ExtendedFloatingActionButton(
                 onClick = { fabExpanded = !fabExpanded },
                 containerColor = Indigo,
                 contentColor = Color.White,
-                icon = { Icon(if (fabExpanded) Icons.Filled.Close else Icons.Filled.Add, contentDescription = null) },
-                text = { Text(if (fabExpanded) "닫기" else "공고 추가") },
+                icon = { Icon(if (fabExpanded) Icons.Filled.Close else Icons.Filled.Menu, contentDescription = null) },
+                text = { Text(if (fabExpanded) "닫기" else "메뉴") },
             )
         }
 
