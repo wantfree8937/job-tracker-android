@@ -23,6 +23,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -41,6 +42,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.QuestionAnswer
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -96,6 +99,7 @@ fun HomeScreen(
 ) {
     val state by viewModel.uiState.collectAsState()
     var showLogoutConfirm by remember { mutableStateOf(false) }
+    var fabExpanded by remember { mutableStateOf(false) }
 
     // 스크랩 성공 토스트 3초 후 자동 제거 (LoginScreen과 동일 패턴)
     LaunchedEffect(state.message) {
@@ -140,9 +144,6 @@ fun HomeScreen(
                 ),
                 modifier = Modifier.weight(1f),
             )
-            TextButton(onClick = onInterview) {
-                Text("AI 면접 질문", color = Indigo, fontSize = 13.sp)
-            }
             TextButton(onClick = viewModel::onOpenKeywords) {
                 Text("관심 분야", color = Indigo, fontSize = 13.sp)
             }
@@ -367,16 +368,40 @@ fun HomeScreen(
         }
     }
 
-        ExtendedFloatingActionButton(
-            onClick = onNavigateToForm,
+        Column(
+            horizontalAlignment = Alignment.End,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(end = 20.dp, bottom = 32.dp),
-            containerColor = Indigo,
-            contentColor = Color.White,
-            icon = { Icon(Icons.Filled.Add, contentDescription = null) },
-            text = { Text("공고 추가") },
-        )
+        ) {
+            AnimatedVisibility(visible = fabExpanded) {
+                Column(horizontalAlignment = Alignment.End) {
+                    ExtendedFloatingActionButton(
+                        onClick = { fabExpanded = false; onInterview() },
+                        containerColor = SurfaceWhite,
+                        contentColor = Indigo,
+                        icon = { Icon(Icons.Filled.QuestionAnswer, contentDescription = null) },
+                        text = { Text("AI 면접 질문") },
+                    )
+                    Spacer(Modifier.height(12.dp))
+                    ExtendedFloatingActionButton(
+                        onClick = { fabExpanded = false; onNavigateToForm() },
+                        containerColor = SurfaceWhite,
+                        contentColor = Indigo,
+                        icon = { Icon(Icons.Filled.Add, contentDescription = null) },
+                        text = { Text("공고 추가") },
+                    )
+                    Spacer(Modifier.height(12.dp))
+                }
+            }
+            ExtendedFloatingActionButton(
+                onClick = { fabExpanded = !fabExpanded },
+                containerColor = Indigo,
+                contentColor = Color.White,
+                icon = { Icon(if (fabExpanded) Icons.Filled.Close else Icons.Filled.Add, contentDescription = null) },
+                text = { Text(if (fabExpanded) "닫기" else "공고 추가") },
+            )
+        }
 
         state.message?.let { message ->
             Toast(message = message, isError = false)

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -20,10 +21,9 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
@@ -31,6 +31,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -158,14 +159,6 @@ fun InterviewScreen(
                 }
             }
 
-            if (state.isLoading) {
-                item {
-                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator(color = Indigo)
-                    }
-                }
-            }
-
             if (state.questions.isNotEmpty()) {
                 state.usedResume?.let { usedResume ->
                     item {
@@ -212,32 +205,44 @@ private fun JobSelector(
     enabled: Boolean,
     onSelect: (JobPostingResponse?) -> Unit,
 ) {
-    var expanded by remember { mutableStateOf(false) }
+    var showDialog by remember { mutableStateOf(false) }
 
-    Box {
-        OutlinedButton(
-            onClick = { expanded = true },
-            enabled = enabled,
+    OutlinedButton(
+        onClick = { showDialog = true },
+        enabled = enabled,
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(10.dp),
+    ) {
+        Text(
+            text = selectedJob?.let { "${it.companyName} · ${it.position}" } ?: "공고를 선택하세요",
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(10.dp),
-        ) {
-            Text(
-                text = selectedJob?.let { "${it.companyName} · ${it.position}" } ?: "공고를 선택하세요",
-                modifier = Modifier.fillMaxWidth(),
-                color = if (selectedJob != null) TextDark else TextGray,
-            )
-        }
-        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            DropdownMenuItem(
-                text = { Text("공고를 선택하세요") },
-                onClick = { onSelect(null); expanded = false },
-            )
-            jobs.forEach { job ->
-                DropdownMenuItem(
-                    text = { Text("${job.companyName} · ${job.position}") },
-                    onClick = { onSelect(job); expanded = false },
-                )
-            }
-        }
+            color = if (selectedJob != null) TextDark else TextGray,
+        )
+    }
+
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text("면접볼 공고 선택") },
+            text = {
+                LazyColumn(modifier = Modifier.heightIn(max = 400.dp)) {
+                    item {
+                        DropdownMenuItem(
+                            text = { Text("공고를 선택하세요") },
+                            onClick = { onSelect(null); showDialog = false },
+                        )
+                    }
+                    items(jobs) { job ->
+                        DropdownMenuItem(
+                            text = { Text("${job.companyName} · ${job.position}") },
+                            onClick = { onSelect(job); showDialog = false },
+                        )
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showDialog = false }) { Text("닫기") }
+            },
+        )
     }
 }
