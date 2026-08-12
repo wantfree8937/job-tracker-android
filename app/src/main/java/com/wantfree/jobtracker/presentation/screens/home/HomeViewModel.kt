@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 import javax.inject.Inject
 
 /** 홈 화면 탭 — 내 공고 / 수집 공고 */
@@ -30,8 +31,11 @@ data class HomeUiState(
     val keyword: String = "",
     val collectedJobs: List<CollectedJobResponse> = emptyList(),
     val collectedKeyword: String = "",
+    val sourceFilter: String = "ALL",
+    val mineOnly: Boolean = false,
     val isLoading: Boolean = false,
     val isSearching: Boolean = false,
+    val isCrawling: Boolean = false,
     val errorMessage: String? = null,
     val message: String? = null,
     val myKeywords: List<String> = emptyList(),
@@ -81,6 +85,32 @@ class HomeViewModel @Inject constructor(
     /** 검색창 키워드로 기존 수집 공고를 필터링만 한다 (크롤링 없음) */
     fun applyKeywordFilter() = loadCollected()
 
+    fun onSourceFilterChange(filter: String) = _uiState.update { it.copy(sourceFilter = filter) }
+
+    fun onMineOnlyChange(mineOnly: Boolean) = _uiState.update { it.copy(mineOnly = mineOnly) }
+
+    /** 관심 키워드 전체 크롤링 — "공고 불러오기" 버튼 전용 */
+    fun crawl() {
+        if (_uiState.value.isCrawling) return
+        viewModelScope.launch {
+            _uiState.update { it.copy(isCrawling = true, errorMessage = null) }
+            jobRepository.crawlCollected()
+                .onSuccess { result ->
+                    val message = if (result.loaded > 0) "${result.loaded}건 새로 가져왔어요" else "새 공고가 없어요"
+                    _uiState.update { it.copy(isCrawling = false, message = message) }
+                    loadCollected()
+                }
+                .onFailure { e ->
+                    val message = if (e is HttpException && e.code() == 400) {
+                        "관심 분야를 먼저 등록해주세요"
+                    } else {
+                        e.message ?: "공고 불러오기에 실패했습니다"
+                    }
+                    _uiState.update { it.copy(isCrawling = false, errorMessage = message) }
+                }
+        }
+    }
+
     /** collect/search 크롤링 수집 — "가져오기" 버튼 전용 */
     fun collectJobs() {
         val keyword = _uiState.value.collectedKeyword.trim()
@@ -108,7 +138,7 @@ class HomeViewModel @Inject constructor(
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
             jobRepository.getCollectedJobs(_uiState.value.collectedKeyword.trim().ifBlank { null })
                 .onSuccess { jobs ->
-                    _uiState.update { it.copy(collectedJobs = jobs.filterNot { job -> job.scrapedByMe }, isLoading = false) }
+                    _uiState.update { it.copy(collectedJobs = jobs, isLoading = false) }
                 }
                 .onFailure { e ->
                     _uiState.update {
@@ -124,7 +154,7 @@ class HomeViewModel @Inject constructor(
                 .onSuccess {
                     _uiState.update { state ->
                         state.copy(
-                            collectedJobs = state.collectedJobs.filterNot { it.id == jobId },
+                            collectedJobs = state.collectedJobs.map { if (it.id == jobId) it.copy(scrapedByMe = true) else it },
                             message = "스크랩했습니다",
                         )
                     }

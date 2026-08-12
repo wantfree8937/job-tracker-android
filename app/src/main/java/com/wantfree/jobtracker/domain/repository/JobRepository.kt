@@ -1,5 +1,6 @@
 package com.wantfree.jobtracker.domain.repository
 
+import com.wantfree.jobtracker.data.model.job.CollectedJobLoadResult
 import com.wantfree.jobtracker.data.model.job.CollectedJobResponse
 import com.wantfree.jobtracker.data.model.job.JobPostingRequest
 import com.wantfree.jobtracker.data.model.job.JobPostingResponse
@@ -29,4 +30,6 @@ interface JobRepository {
     suspend fun scrapCollectedJob(id: Long): Result<JobPostingResponse>
 
     suspend fun searchCollectedJobs(keyword: String): Result<JobSearchResult>
+
+    suspend fun crawlCollected(keywords: List<String> = emptyList()): Result<CollectedJobLoadResult>
 }

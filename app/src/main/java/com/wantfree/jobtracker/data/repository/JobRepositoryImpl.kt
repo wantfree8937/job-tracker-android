@@ -1,7 +1,9 @@
 package com.wantfree.jobtracker.data.repository
 
 import com.wantfree.jobtracker.data.api.JobService
+import com.wantfree.jobtracker.data.model.job.CollectedJobLoadResult
 import com.wantfree.jobtracker.data.model.job.CollectedJobResponse
+import com.wantfree.jobtracker.data.model.job.CrawlRequest
 import com.wantfree.jobtracker.data.model.job.JobPostingRequest
 import com.wantfree.jobtracker.data.model.job.JobPostingResponse
 import com.wantfree.jobtracker.data.model.job.JobPostingUpdateRequest
@@ -42,4 +44,7 @@ class JobRepositoryImpl @Inject constructor(
 
     override suspend fun searchCollectedJobs(keyword: String): Result<JobSearchResult> =
         runCatching { jobService.searchCollectedJobs(JobSearchRequest(keyword)) }
+
+    override suspend fun crawlCollected(keywords: List<String>): Result<CollectedJobLoadResult> =
+        runCatching { jobService.crawlCollected(CrawlRequest(keywords)) }
 }

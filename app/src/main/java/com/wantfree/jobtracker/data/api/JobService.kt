@@ -1,6 +1,8 @@
 package com.wantfree.jobtracker.data.api
 
+import com.wantfree.jobtracker.data.model.job.CollectedJobLoadResult
 import com.wantfree.jobtracker.data.model.job.CollectedJobResponse
+import com.wantfree.jobtracker.data.model.job.CrawlRequest
 import com.wantfree.jobtracker.data.model.job.JobPostingRequest
 import com.wantfree.jobtracker.data.model.job.JobPostingResponse
 import com.wantfree.jobtracker.data.model.job.JobPostingUpdateRequest
@@ -48,4 +50,7 @@ interface JobService {
 
     @POST("api/jobs/collect/search")
     suspend fun searchCollectedJobs(@Body request: JobSearchRequest): JobSearchResult
+
+    @POST("api/jobs/collected/crawl")
+    suspend fun crawlCollected(@Body request: CrawlRequest = CrawlRequest()): CollectedJobLoadResult
 }
