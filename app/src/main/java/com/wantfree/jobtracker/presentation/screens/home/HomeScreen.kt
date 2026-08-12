@@ -283,7 +283,7 @@ fun HomeScreen(
 
         LazyRow(
             contentPadding = PaddingValues(horizontal = 20.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
         ) {
             item {
                 FilterChip(
@@ -299,13 +299,7 @@ fun HomeScreen(
                     label = { Text("내 관심 공고") },
                 )
             }
-        }
-
-        Spacer(Modifier.height(8.dp))
-        LazyRow(
-            contentPadding = PaddingValues(horizontal = 20.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
+            item { Spacer(Modifier.width(6.dp)) }
             item {
                 FilterChip(
                     selected = state.sourceFilter == "ALL",
@@ -329,7 +323,7 @@ fun HomeScreen(
             }
         }
 
-        Spacer(Modifier.height(12.dp))
+        Spacer(Modifier.height(8.dp))
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -341,7 +335,7 @@ fun HomeScreen(
                 onValueChange = viewModel::onCollectedKeywordChange,
                 modifier = Modifier
                     .weight(1f)
-                    .height(56.dp),
+                    .height(52.dp),
                 placeholder = { Text("키워드로 공고 찾기") },
                 singleLine = true,
                 minLines = 1,
@@ -367,21 +361,15 @@ fun HomeScreen(
             ) {
                 Text("검색")
             }
-        }
-
-        Spacer(Modifier.height(12.dp))
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp),
-        ) {
+            Spacer(Modifier.width(8.dp))
             Button(
                 onClick = viewModel::crawl,
                 enabled = !state.isCrawling,
+                contentPadding = PaddingValues(horizontal = 12.dp),
                 shape = RoundedCornerShape(10.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Indigo),
             ) {
-                Text(if (state.isCrawling) "불러오는 중..." else "공고 불러오기")
+                Text(if (state.isCrawling) "불러오는 중..." else "불러오기")
             }
         }
 
@@ -390,7 +378,7 @@ fun HomeScreen(
                 (!state.mineOnly || job.scrapedByMe)
         }
 
-        Spacer(Modifier.height(12.dp))
+        Spacer(Modifier.height(8.dp))
         Box(modifier = Modifier.fillMaxSize()) {
             when {
                 state.isLoading && state.collectedJobs.isEmpty() -> {
