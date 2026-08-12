@@ -428,12 +428,16 @@ private fun StatCard(meta: StatusMeta, count: Long) {
     }
 }
 
-// 지역/경력/업종 중 값이 있는 것만 " · "로 join
-private fun metaLine(region: String?, experience: String?, industry: String?): String? =
-    listOfNotNull(region, experience, industry)
-        .filter { it.isNotBlank() }
-        .takeIf { it.isNotEmpty() }
-        ?.joinToString(" · ")
+// 지역/경력/업종 + 마감일 중 값이 있는 것만 " · "로 join ("2026-08-31" → "마감 8/31")
+private fun metaLine(region: String?, experience: String?, industry: String?, deadline: String? = null): String? {
+    val parts = listOfNotNull(region, experience, industry).filter { it.isNotBlank() }
+    val deadlinePart = deadline?.takeIf { it.isNotBlank() }?.split("-")
+        ?.takeIf { it.size == 3 }
+        ?.let { "마감 ${it[1].toInt()}/${it[2].toInt()}" }
+    return listOfNotNull(parts.joinToString(" · ").ifEmpty { null }, deadlinePart)
+        .joinToString(" · ")
+        .ifEmpty { null }
+}
 
 @Composable
 private fun JobRow(job: JobPostingResponse, onClick: () -> Unit) {
@@ -493,7 +497,7 @@ private fun CollectedJobRow(job: CollectedJobResponse, onScrap: () -> Unit) {
         Column(modifier = Modifier.weight(1f)) {
             Text(text = job.company, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextDark, maxLines = 1, overflow = TextOverflow.Ellipsis)
             Text(text = job.title, fontSize = 14.sp, color = TextGray, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            metaLine(job.region, job.experience, job.industry)?.let { meta ->
+            metaLine(job.region, job.experience, job.industry, job.deadline)?.let { meta ->
                 Text(text = meta, fontSize = 12.sp, color = TextGray, maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
             Spacer(Modifier.height(4.dp))
