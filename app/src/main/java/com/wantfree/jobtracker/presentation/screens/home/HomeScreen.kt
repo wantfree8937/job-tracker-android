@@ -43,6 +43,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.QuestionAnswer
 import androidx.compose.material.icons.filled.Star
@@ -97,6 +98,7 @@ fun HomeScreen(
     onNavigateToDetail: (Long) -> Unit,
     onLogout: () -> Unit,
     onInterview: () -> Unit,
+    onResume: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsState()
@@ -408,7 +410,13 @@ fun HomeScreen(
                         text = { Text("관심 분야") },
                     )
                     Spacer(Modifier.height(12.dp))
-                    // 내 이력서 항목은 나중에 여기 추가 (icon = Icons.Filled.Description 등)
+                    ExtendedFloatingActionButton(
+                        onClick = { fabExpanded = false; onResume() },
+                        containerColor = SurfaceWhite,
+                        contentColor = Indigo,
+                        icon = { Icon(Icons.Filled.Description, contentDescription = null) },
+                        text = { Text("내 이력서") },
+                    )
                 }
             }
             ExtendedFloatingActionButton(

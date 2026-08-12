@@ -100,6 +100,12 @@ fun InterviewScreen(
             contentPadding = PaddingValues(horizontal = 20.dp, vertical = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
+            if (state.hasResume) {
+                item {
+                    Text(text = "📄 이력서 저장됨", fontSize = 13.sp, color = TextGray)
+                }
+            }
+
             item {
                 Column {
                     Text(text = "면접볼 공고 (선택)", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = TextDark)

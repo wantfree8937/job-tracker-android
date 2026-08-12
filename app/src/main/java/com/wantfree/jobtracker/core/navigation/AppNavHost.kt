@@ -11,6 +11,7 @@ import com.wantfree.jobtracker.presentation.screens.form.JobFormScreen
 import com.wantfree.jobtracker.presentation.screens.home.HomeScreen
 import com.wantfree.jobtracker.presentation.screens.interview.InterviewScreen
 import com.wantfree.jobtracker.presentation.screens.login.LoginScreen
+import com.wantfree.jobtracker.presentation.screens.resume.ResumeScreen
 
 @Composable
 fun AppNavHost(startDestination: String = "login") {
@@ -35,6 +36,7 @@ fun AppNavHost(startDestination: String = "login") {
                     }
                 },
                 onInterview = { navController.navigate("interview") },
+                onResume = { navController.navigate("resume") },
             )
         }
         composable(
@@ -58,6 +60,11 @@ fun AppNavHost(startDestination: String = "login") {
         }
         composable("interview") {
             InterviewScreen(
+                onBack = { navController.popBackStack() },
+            )
+        }
+        composable("resume") {
+            ResumeScreen(
                 onBack = { navController.popBackStack() },
             )
         }

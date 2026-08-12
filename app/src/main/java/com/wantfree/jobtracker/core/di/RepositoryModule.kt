@@ -3,9 +3,11 @@ package com.wantfree.jobtracker.core.di
 import com.wantfree.jobtracker.data.repository.AiRepositoryImpl
 import com.wantfree.jobtracker.data.repository.AuthRepositoryImpl
 import com.wantfree.jobtracker.data.repository.JobRepositoryImpl
+import com.wantfree.jobtracker.data.repository.ProfileRepositoryImpl
 import com.wantfree.jobtracker.domain.repository.AiRepository
 import com.wantfree.jobtracker.domain.repository.AuthRepository
 import com.wantfree.jobtracker.domain.repository.JobRepository
+import com.wantfree.jobtracker.domain.repository.ProfileRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -28,4 +30,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindAiRepository(impl: AiRepositoryImpl): AiRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindProfileRepository(impl: ProfileRepositoryImpl): ProfileRepository
 }
