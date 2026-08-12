@@ -34,6 +34,7 @@ fun AppNavHost(startDestination: String = "login") {
                         popUpTo(0) { inclusive = true } // 전체 스택 제거
                     }
                 },
+                onInterview = { navController.navigate("interview") },
             )
         }
         composable(
@@ -44,7 +45,6 @@ fun AppNavHost(startDestination: String = "login") {
                 onBack = { navController.popBackStack() },
                 onNavigateToEdit = { jobId -> navController.navigate("job_form?jobId=$jobId") },
                 onDeleted = { navController.popBackStack("home", inclusive = false) },
-                onInterview = { jobId -> navController.navigate("interview/$jobId") },
             )
         }
         composable(
@@ -56,10 +56,7 @@ fun AppNavHost(startDestination: String = "login") {
                 onBack = { navController.popBackStack() },
             )
         }
-        composable(
-            route = "interview/{jobId}",
-            arguments = listOf(navArgument("jobId") { type = NavType.LongType }),
-        ) {
+        composable("interview") {
             InterviewScreen(
                 onBack = { navController.popBackStack() },
             )

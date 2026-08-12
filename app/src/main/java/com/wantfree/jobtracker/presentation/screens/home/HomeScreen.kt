@@ -91,6 +91,7 @@ fun HomeScreen(
     onNavigateToForm: () -> Unit,
     onNavigateToDetail: (Long) -> Unit,
     onLogout: () -> Unit,
+    onInterview: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsState()
@@ -139,6 +140,9 @@ fun HomeScreen(
                 ),
                 modifier = Modifier.weight(1f),
             )
+            TextButton(onClick = onInterview) {
+                Text("AI 면접 질문", color = Indigo, fontSize = 13.sp)
+            }
             TextButton(onClick = viewModel::onOpenKeywords) {
                 Text("관심 분야", color = Indigo, fontSize = 13.sp)
             }

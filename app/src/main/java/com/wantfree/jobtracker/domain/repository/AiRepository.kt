@@ -1,5 +1,6 @@
 package com.wantfree.jobtracker.domain.repository
 
+import com.wantfree.jobtracker.data.model.ai.InterviewQuestionResponse
 import com.wantfree.jobtracker.data.model.job.JobPostingResponse
 
 /**
@@ -8,5 +9,9 @@ import com.wantfree.jobtracker.data.model.job.JobPostingResponse
  */
 interface AiRepository {
 
-    suspend fun getInterviewQuestions(job: JobPostingResponse): Result<List<String>>
+    suspend fun getInterviewQuestions(
+        job: JobPostingResponse?,
+        topic: String,
+        difficulty: String,
+    ): Result<InterviewQuestionResponse>
 }

@@ -6,4 +6,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class InterviewQuestionResponse(
     val questions: List<String>,
+    val usedResume: Boolean? = null,
 )
