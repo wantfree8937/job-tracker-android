@@ -36,11 +36,13 @@ com.wantfree.jobtracker/
 └── presentation/  # Compose 화면 (로그인/홈/등록/상세/AI면접/이력서), ViewModel, 테마
 ```
 
-## 실행 방법
+## 화면 소개
 
-1. Android Studio로 프로젝트를 연다.
-2. USB 디버깅을 켠 실기기(또는 에뮬레이터)를 연결한다.
-3. Run (또는 `./gradlew assembleDebug` 후 `adb install -r app/build/outputs/apk/debug/app-debug.apk`).
+| | |
+|---|---|
+| ![로그인](docs/screenshots/login.png) | ![전체 공고](docs/screenshots/collected.png) |
+| ![내 공고](docs/screenshots/mine.png) | ![AI 면접 질문](docs/screenshots/interview.png) |
+| ![내 이력서](docs/screenshots/resume.png) | ![메뉴](docs/screenshots/menu.png) |
 
 ## 백엔드
 
